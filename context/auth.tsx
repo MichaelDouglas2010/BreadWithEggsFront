@@ -3,10 +3,10 @@ import { router } from 'expo-router'
 import User from '../components/interfaces/user'
 import mockUser from '../components/interfaces/mockups/user-mockup'
 
-interface IUser {
+/*interface IUser {
   email: string
   password: string
-}
+}*/
 
 interface IAuthContext {
   user: User
