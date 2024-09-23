@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text } from 'react-native'
 import { useAuth } from '../context/auth'
 import styles from '../components/styles'
 
