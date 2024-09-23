@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from "react-native"
 
-const {width, height} = Dimensions.get('screen')
+const { width, height } = Dimensions.get('screen')
 const minSize = Math.min(width, height)
 
 const styles = StyleSheet.create({
@@ -9,21 +9,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#155F82',
         padding: 20,
-      },
-      loginLabel: {
+    },
+    loginLogo: {
+        width: minSize*0.5,
+        height: minSize*0.5,
+        alignSelf: 'center'
+    },
+    loginLabel: {
         marginTop: 20,
         color: 'white'
-      },
-      loginInput: {
+    },
+    loginInput: {
         marginTop: 10,
         borderColor: 'gray',
-      },
-      loginButton: {
+    },
+    loginButton: {
         marginTop: 20,
         backgroundColor: '#104861',
         alignSelf: 'center',
-        minWidth: minSize*0.3
-      },
+        minWidth: minSize * 0.3
+    },
 
 })
 

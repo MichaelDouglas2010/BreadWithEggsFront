@@ -1,20 +1,13 @@
-import { Image, StyleSheet, Dimensions, ImageSourcePropType } from 'react-native'
+import { Image, Dimensions } from 'react-native'
+import styles from '../styles'
 
-const {width, height} = Dimensions.get('window')
-const size = Math.min(width, height)*0.3
-
-const styles = StyleSheet.create({
-    logo:{
-        width: 200,
-        height: 200,
-        alignSelf: 'center'
-    }
-})
+const {width, height} = Dimensions.get('screen')
+const size = Math.min(width, height)*0.5
 
 export default function Logo(){
     return (
         <Image 
-        style={styles.logo}
+        style={styles.loginLogo}
         source={require('../../assets/logo.png')}
         />
     )
