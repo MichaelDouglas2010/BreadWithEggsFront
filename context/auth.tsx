@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { router } from 'expo-router'
+import User from '../components/interfaces/user'
+import mockUser from '../components/interfaces/mockups/user-mockup'
 
 interface IUser {
   email: string
@@ -7,27 +9,39 @@ interface IUser {
 }
 
 interface IAuthContext {
-  user: IUser
-  setUser: (user: IUser) => void
+  user: User
+  setUser: (user: User) => void
   handleLogin: () => void
 }
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<IUser>({email: '', password: ''})
+  const [user, setUser] = useState<User>({email: '', password: '', name: ''})
 
   function handleLogin() {
-    if(user && user.email === 'admin' && user.password === 'admin') {
+    const foundUser = mockUser.find(
+      (i) => i.email === user.email && i.password === user.password
+    )
+  
+    if (foundUser) {
+      setUser({... user, name: foundUser.name})
       router.push('home')
     } else {
       alert('Usuário ou senha inválidos')
     }
   }
+/*    if(user && user.email === 'admin' && user.password === 'admin') {
+      router.push('home')
+    } else {
+      alert('Usuário ou senha inválidos')
+    }
+  }
+*/
 
   return (
     <AuthContext.Provider value={{ user, handleLogin, setUser }}>

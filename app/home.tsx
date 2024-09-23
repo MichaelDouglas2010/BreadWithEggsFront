@@ -6,7 +6,7 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Text>Bem-vindo, {user.email}!</Text>
+      <Text>Bem-vindo, {user.name}!</Text>
     </View>
   )
 }
