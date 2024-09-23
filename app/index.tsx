@@ -1,12 +1,14 @@
 import { View, StyleSheet } from 'react-native'
 import { Button, TextInput } from 'react-native-paper'
 import { useAuth } from '../context/auth'
+import Logo from '../components/handle-images/logo'
 
 export default function Login() {
   const { user, handleLogin, setUser } = useAuth()
 
   return (
     <View style={styles.container}>
+      <Logo/>
       <TextInput label="Email" style={styles.mt20} onChangeText={text => setUser({...user, email: text})} />
       <TextInput label="Senha" secureTextEntry={true} style={styles.mt20} onChangeText={text => setUser({...user, password: text})} />
       <Button mode="contained" style={styles.mt20} onPress={handleLogin}>Entrar</Button>
@@ -18,7 +20,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#155F82',
     padding: 20,
   },
   mt20: {
