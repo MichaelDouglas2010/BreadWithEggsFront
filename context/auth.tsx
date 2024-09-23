@@ -21,7 +21,7 @@ interface AuthProviderProps {
 const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>({email: '', password: '', name: ''})
+  const [user, setUser] = useState<User>({email: '', password: '', name: '', team:''})
 
   function handleLogin() {
     const foundUser = mockUser.find(
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     )
   
     if (foundUser) {
-      setUser({... user, name: foundUser.name})
+      setUser(foundUser)
       router.push('home')
     } else {
       alert('Usuário ou senha inválidos')

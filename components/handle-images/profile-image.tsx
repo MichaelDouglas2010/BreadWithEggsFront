@@ -1,10 +1,10 @@
 import { Image } from 'react-native'
 import styles from '../styles'
 
-export default function Logo(){
+export default function ProfileImage(){
     return (
         <Image 
-        style={styles.loginLogo}
+        style={styles.profileImage}
         source={require('../../assets/logo.png')}
         />
     )

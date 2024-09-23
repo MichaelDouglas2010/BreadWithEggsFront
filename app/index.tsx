@@ -15,7 +15,7 @@ export default function Login() {
 
       <View>
         <Text style={styles.loginLabel}>Usuário</Text>
-        <TextInput label="Email" style={styles.loginInput} onChangeText={text => setUser({ ...user, email: text })} />
+        <TextInput label="Usuário" style={styles.loginInput} onChangeText={text => setUser({ ...user, email: text })} />
       </View>
 
       <View>
