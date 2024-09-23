@@ -1,4 +1,7 @@
-import { StyleSheet } from "react-native"
+import { Dimensions, StyleSheet } from "react-native"
+
+const {width, height} = Dimensions.get('screen')
+const minSize = Math.min(width, height)
 
 const styles = StyleSheet.create({
     container: {
@@ -17,9 +20,11 @@ const styles = StyleSheet.create({
       },
       loginButton: {
         marginTop: 20,
-        backgroundColor: '#104861'
+        backgroundColor: '#104861',
+        alignSelf: 'center',
+        minWidth: minSize*0.3
       },
-      
+
 })
 
 export default styles
