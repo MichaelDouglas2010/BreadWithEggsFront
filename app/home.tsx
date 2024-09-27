@@ -20,7 +20,7 @@ export default function Home() {
       <View style={styles.homeMenu}>
         <View style={{ marginBottom: 15 }} />
 
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Consultar Equipamento</Button>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/consultar_equip')}>Consultar Equipamento</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Inserir Entrada / Saída</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Cadastro de Equipamentos</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Relatórios</Button>
