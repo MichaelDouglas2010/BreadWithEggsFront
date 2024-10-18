@@ -4,3 +4,19 @@ export default interface User{
     password: string
     team: string
 }
+
+export interface UserGet{
+    id: string
+    name: string
+    email: string
+    password: string
+    role: string
+    createdAt: string
+}
+
+export interface UserPost{
+    name: string
+    email: string
+    password: string
+    role: string
+}
