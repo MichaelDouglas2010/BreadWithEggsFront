@@ -33,6 +33,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       router.push('home')
     } else {
       alert('Usuário ou senha inválidos')
+
+      router.push('home')
     }
   }
 /*    if(user && user.email === 'admin' && user.password === 'admin') {

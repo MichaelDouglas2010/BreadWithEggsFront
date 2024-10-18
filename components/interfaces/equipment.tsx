@@ -1,5 +1,7 @@
+import { ObjectId } from 'mongodb'
+
 export interface EquipmentGet{
-    id: string
+    _id: ObjectId
     description: string
     marca: string
     dataEntrada: string

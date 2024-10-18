@@ -20,6 +20,17 @@ const styles = StyleSheet.create({
     height: height * 0.6,
     borderWidth: 2,
   },
+  consEquipMenu: {
+    marginTop: 10,
+    backgroundColor: "#104861",
+    alignSelf: "center",
+    width: width * 0.9,
+    height: height * 0.5,
+    borderWidth: 2,
+    borderColor: 'white',
+    paddingTop: 5,
+    paddingBottom: 30,
+  },
   profileBox: {
     flexDirection: "row",
     marginBottom: 5,
@@ -31,8 +42,20 @@ const styles = StyleSheet.create({
   searchContainer: {
     marginTop: 20,
     marginBottom: 20,
-    width: "100%",
+    width: width,
     alignItems: "center",
+  },
+  pageTitleBox: {
+    backgroundColor:"#104861",
+    marginTop: height*0.08,
+    marginBottom: 5,
+    paddingBottom: 5,
+    paddingTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    borderColor: '#53A9CF',
+    borderWidth:2,
   },
 
   // Imagens
@@ -56,6 +79,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "white",
     fontSize: 15,
+  },
+  pageTitleLabel: {
+    textAlign: 'center',
+    margin: 2,
+    color: 'white',
+    fontSize: 30,
   },
 
   // Campos de Texto e Input
@@ -107,12 +136,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 2,
     borderColor: "black",
-    backgroundColor: "#155F82",
+    backgroundColor: "#104861",
     alignSelf: "flex-start",
     justifyContent: "center",
     width: width * 0.30,
-    height: height * 0.05,
-    fontSize: 4,
+    height: height * 0.07,
+    fontSize: 12,
   },
 });
 

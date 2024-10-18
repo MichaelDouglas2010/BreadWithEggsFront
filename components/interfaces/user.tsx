@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb'
+
 export default interface User{
     name: string
     email: string
@@ -6,7 +8,7 @@ export default interface User{
 }
 
 export interface UserGet{
-    id: string
+    id: ObjectId
     name: string
     email: string
     password: string

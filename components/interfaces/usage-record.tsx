@@ -1,5 +1,7 @@
+import { ObjectId } from 'mongodb'
+
 export interface UsageRecordGet{
-    id: string
+    id: ObjectId
     equipmentId: string
     userId: string
     activity: string
