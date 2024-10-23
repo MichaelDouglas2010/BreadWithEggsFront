@@ -12,7 +12,7 @@ export interface UserGet{
     name: string
     email: string
     password: string
-    role: string
+    team: string
     createdAt: string
 }
 
@@ -20,5 +20,5 @@ export interface UserPost{
     name: string
     email: string
     password: string
-    role: string
+    team: string
 }
