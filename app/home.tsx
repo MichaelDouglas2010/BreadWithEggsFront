@@ -25,7 +25,7 @@ export default function Home() {
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Cadastro de Equipamentos</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Relatórios</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/camera')}>Camera</Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/')}>Sobre</Button>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/about')}>Sobre</Button>
 
       </View>
     </View>

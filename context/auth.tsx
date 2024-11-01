@@ -1,12 +1,8 @@
 import React, { createContext, useContext, useState } from 'react'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import User from '../components/interfaces/user'
 import mockUser from '../components/interfaces/mockups/user-mockup'
-
-/*interface IUser {
-  email: string
-  password: string
-}*/
+import api from '../helpers/axios'
 
 interface IAuthContext {
   user: User
@@ -21,29 +17,43 @@ interface AuthProviderProps {
 const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>({email: '', password: '', name: '', team:''})
+  const [user, setUser] = useState<User>({ email: '', password: '', name: '', team: '' })
 
-  function handleLogin() {
-    const foundUser = mockUser.find(
-      (i) => i.email === user.email && i.password === user.password
-    )
-  
-    if (foundUser) {
-      setUser(foundUser)
-      router.push('home')
-    } else {
-      alert('Usuário ou senha inválidos')
+  useFocusEffect(
+    React.useCallback(() => {
+      setUser({ email: '', password: '', name: '', team: '' })
+      console.log(user)
+    }, [])
+  )
 
-      router.push('home')
+  async function handleLogin() {
+    try {
+      if (!user.email) alert('Insira usuário e senha!')
+      else {
+        const response = await api.get(`/user/login/${user.email}`)
+        if (user.password == response.data.password) {
+          setUser(response.data)
+          router.push('home')
+        }
+        else { alert('Usuário ou senha não encontrado!') }
+      }
     }
-  }
-/*    if(user && user.email === 'admin' && user.password === 'admin') {
-      router.push('home')
-    } else {
-      alert('Usuário ou senha inválidos')
+    catch (e) {
+      const error = e as { status?: number }
+      //console.log("Erro: " + e)
+      if (error.status === 404) alert('Usuário ou senha não encontrado!')
+      if (error.status === 500) alert('Insira usuário e senha!')
     }
+
   }
-*/
+  /*
+      if (foundUser) {
+        setUser(foundUser)
+        router.push('home')
+      } else {
+        alert('Usuário ou senha inválidos')
+      }
+    }*/
 
   return (
     <AuthContext.Provider value={{ user, handleLogin, setUser }}>
