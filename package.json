@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
     "axios": "^1.7.7",
     "expo": "~51.0.28",
     "expo-barcode-scanner": "~13.0.1",
