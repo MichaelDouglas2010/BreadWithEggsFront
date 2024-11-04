@@ -1,12 +1,14 @@
 import axios from "axios";
+import Constants from "expo-constants";
 
+const uri = Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig?.hostUri?.split(':').shift()}:3000` : "";
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://192.168.210.39:3000',
+    baseURL: uri,
     timeout: 5000, // Tempo limite de 5 segundos
     headers: {
         'Content-Type': 'application/json',
     }
-});
+})
 
 // Interceptor de requisição
 api.interceptors.request.use(
