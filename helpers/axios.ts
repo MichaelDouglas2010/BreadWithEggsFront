@@ -1,8 +1,10 @@
 import axios from "axios";
+import Constants from "expo-constants";
 
+const uri = Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig?.hostUri?.split(':').shift()}:3000` : "";
 const api = axios.create({
-    baseURL: 'http://192.168.15.16:3000'
-    //baseURL: 'http://192.168.18.64:3000'
+    baseURL: uri,
+    timeout: 2000
 
 })
 
