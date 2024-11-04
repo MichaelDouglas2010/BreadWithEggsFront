@@ -58,6 +58,21 @@ const styles = StyleSheet.create({
     borderWidth:2,
   },
 
+  // Estilos para a tabela
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  cell: {
+    flex: 1,
+    textAlign: 'center',
+    padding: 5,
+    color: 'white', // Defina a cor do texto conforme necessário
+  },
+
   // Imagens
   loginLogo: {
     width: minSize * 0.5,
