@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 
 import { EquipmentGet } from '../interfaces/equipment';
-import { Link } from '@react-navigation/native';
+import { Link } from 'expo-router';
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
@@ -29,7 +29,11 @@ const EquipmentTable2: React.FC<EquipmentTableProps> = ({ equipments }) => {
           data={equipments}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
-            <Link to={`/equipment/${item._id}`} style={styles.row}>
+            <Link href={{
+              pathname: '/consultar_equip_detalhe', 
+              params: { equipId: String(item._id)}
+            }}
+            style={styles.row}>
               <View style={styles.statusContainer}>
                 <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) }]} />
               </View>

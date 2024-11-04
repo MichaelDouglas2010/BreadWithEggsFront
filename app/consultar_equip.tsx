@@ -1,20 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { View, Text, TextInput, ScrollView } from 'react-native'
 import { useAuth } from '../context/auth'
 import styles from '../components/styles'
 import { Button } from 'react-native-paper'
-import { router } from 'expo-router'
-import ProfileImage from '../components/handle-images/profile-image'
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import axios from 'axios'
 import EquipmentTable2 from '../components/tabelas/Equipament_tableCopy'
 
 export default function ConsultarEquip() {
-  const { user } = useAuth()
+
   const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
 
-  const [equipment, setEquipment] = useState<EquipmentGet[]>([])
   const [filter, setFilter] = useState<EquipmentGet[]>([])
 
   const [errorMessage, setErrorMessage] = useState('')
@@ -75,8 +72,8 @@ export default function ConsultarEquip() {
       </View>
 
       <ScrollView horizontal style={[styles.consEquipMenu]}>
-        <View style={{ marginBottom: 5, overflow:'hidden' }} />
-            <EquipmentTable2 equipments={filter} navigation={undefined} />
+        <View style={{ marginBottom: 5}} />
+            <EquipmentTable2 equipments={filter}/>
         {/* Botões ou outros conteúdos */}
       </ScrollView>
     </View>
