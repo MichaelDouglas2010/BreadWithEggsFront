@@ -28,8 +28,6 @@ const styles = StyleSheet.create({
     height: height * 0.5,
     borderWidth: 2,
     borderColor: 'white',
-    paddingTop: 5,
-    paddingBottom: 30,
   },
   profileBox: {
     flexDirection: "row",
