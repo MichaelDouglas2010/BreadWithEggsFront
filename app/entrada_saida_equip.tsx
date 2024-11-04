@@ -1,81 +1,67 @@
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-paper';
 import styles from '../components/styles';
 import api from '../helpers/axios';
+import EquipmentTable from '../components/tabelas/Equipament_table';
+import axios from 'axios';
 import { EquipmentGet } from '../components/interfaces/equipment';
 
 export default function ConsultarEquip() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<EquipmentGet[]>([]); // Inicialmente vazio
-  const [errorMessage, setErrorMessage] = useState(''); // Estado para a mensagem de erro
+  const [filter, setFilter] = useState<EquipmentGet[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
+    setIsLoading(true);
     try {
-      let response;
-
+      let response: { data: EquipmentGet[] };
       if (searchQuery) {
-        // Busca por descrição ou ID
         response = await api.get(`/equipment?search=${searchQuery}`);
-        
-        // Verifica se a resposta tem equipamentos
         if (response.data.length > 0) {
-          setFilter(response.data); // Armazena os equipamentos encontrados
-          setErrorMessage(''); // Limpa a mensagem de erro
+          setFilter(response.data);
+          setErrorMessage('');
         } else {
-          setFilter([]); // Limpa o filtro se não houver equipamentos
-          setErrorMessage('Equipamento inexistente'); // Define a mensagem de erro
+          setFilter([]);
+          setErrorMessage('Equipamento inexistente');
         }
       } else {
-        // Se a busca estiver vazia, mostra todos os equipamentos
         response = await api.get('/equipment');
         setFilter(response.data);
-        setErrorMessage(''); // Limpa a mensagem de erro
+        setErrorMessage('');
       }
     } catch (error) {
-      console.log("Erro na busca: ", error);
-      setErrorMessage('Erro ao buscar equipamentos'); // Define a mensagem de erro em caso de falha
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error response:', error.response);
+        setErrorMessage(`Erro: ${error.response.data.message || 'Erro ao buscar equipamentos'}`);
+      } else {
+        console.error('Erro na busca: ', error);
+        setErrorMessage('Erro ao buscar equipamentos');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>  Entrada e Saida</Text>
-      </View>
-
-      {/* Barra de Pesquisa */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Insira a descrição ou ID do equipamento"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Button icon="magnify" mode="contained" style={styles.searchButton} onPress={handleSearch}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Insira a descrição ou ID do equipamento"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        accessibilityLabel="Campo de busca de equipamento"
+      />
+      {isLoading ? (
+        <ActivityIndicator size="small" color="#0000ff" />
+      ) : (
+        <Button icon="magnify" mode="contained" style={styles.searchButton} onPress={handleSearch} accessibilityLabel="Botão para buscar equipamento">
           Buscar
         </Button>
-      </View>
-
-      {/* Mensagem de erro, se houver */}
-      {errorMessage ? (
-        <Text style={{ color: 'red', marginTop: 10 }}>{errorMessage}</Text>
-      ) : null}
-
-      {/* Mostra os equipamentos apenas após clicar no botão de busca */}
-      <ScrollView style={styles.consEquipMenu}>
-        <View style={{ marginBottom: 5 }} />
-        {filter.map((equip) => (
-          <Button
-            key={equip._id.toString()}
-            mode="contained"
-            style={styles.homeButton}
-            onPress={() => console.log(`Apertou ${equip.description}`)}
-          >
-            {equip.description} - {equip.marca} - {equip.status}
-          </Button>
-        ))}
-      </ScrollView>
+      )}
+      {errorMessage ? <Text style={[styles.errorText, { color: 'red' }]}>{errorMessage}</Text> : null}
+      {filter.length > 0 && <EquipmentTable equipments={filter} navigation={undefined} />}
     </View>
   );
 }
