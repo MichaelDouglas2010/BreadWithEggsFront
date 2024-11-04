@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
 import { router, useFocusEffect } from 'expo-router'
 import User from '../components/interfaces/user'
-import mockUser from '../components/interfaces/mockups/user-mockup'
 import api from '../helpers/axios'
 
 interface IAuthContext {

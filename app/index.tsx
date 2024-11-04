@@ -3,10 +3,17 @@ import { Button, TextInput } from 'react-native-paper'
 import { useAuth } from '../context/auth'
 import Logo from '../components/handle-images/logo'
 import styles from '../components/styles'
-import { Link } from 'expo-router'
+import { Link, useFocusEffect } from 'expo-router'
+import React from 'react'
 
 export default function Login() {
   const { user, handleLogin, setUser } = useAuth()
+  useFocusEffect(
+    React.useCallback(() => {
+      setUser({ email: '', password: '', name: '', team: '' })
+      console.log(user)
+    }, [])
+  )
 
   return (
     <View style={styles.container}>
