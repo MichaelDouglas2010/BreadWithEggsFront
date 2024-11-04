@@ -18,13 +18,6 @@ const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>({ email: '', password: '', name: '', team: '' })
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setUser({ email: '', password: '', name: '', team: '' })
-      console.log(user)
-    }, [])
-  )
-
   async function handleLogin() {
     try {
       if (!user.email) alert('Insira usuário e senha!')
