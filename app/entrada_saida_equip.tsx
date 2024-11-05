@@ -3,9 +3,11 @@ import { View, Text, TextInput, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-paper';
 import styles from '../components/styles';
 import api from '../helpers/axios';
-import EquipmentTable from '../components/tabelas/Equipament_table';
+
 import axios from 'axios';
 import { EquipmentGet } from '../components/interfaces/equipment';
+import EquipmentTable from '../components/tabelas/Equipament_table';
+
 
 export default function ConsultarEquip() {
   const [searchQuery, setSearchQuery] = useState('');
