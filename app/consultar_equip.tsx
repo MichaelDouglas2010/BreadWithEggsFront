@@ -59,7 +59,7 @@ export default function ConsultarEquip() {
         <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
         <TextInput
         style={styles.searchInput}
-        placeholder="Insira a descrição ou ID do equipamento"
+        placeholder="Insira a descrição ou ID do equip"
         value={searchQuery}
         onChangeText={setSearchQuery}
         accessibilityLabel="Campo de busca de equipamento"

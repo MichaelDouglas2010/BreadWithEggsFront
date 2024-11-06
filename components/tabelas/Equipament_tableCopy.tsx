@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
-
 import { EquipmentGet } from '../interfaces/equipment';
 import { Link } from 'expo-router';
 
@@ -29,23 +28,31 @@ const EquipmentTable2: React.FC<EquipmentTableProps> = ({ equipments }) => {
           data={equipments}
           keyExtractor={(item) => item._id.toString()}
           renderItem={({ item }) => (
-            <Link href={{
-              pathname: '/consultar_equip_detalhe', 
-              params: { equipId: String(item._id)}
-            }}
-            style={styles.row}>
+            <Link
+              href={{
+                pathname: '/consultar_equip_detalhe', 
+                params: { equipId: String(item._id) }
+              }}
+              style={styles.row}
+            >
               <View style={styles.statusContainer}>
                 <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) }]} />
               </View>
-              <View style={styles.cell2}>
-                <Text style={styles.cell}>{item.description}</Text>
+              <View style={styles.descriptionCell}>
+                <Text style={styles.text}>{item.description}</Text>
               </View>
-              <View >
-                <Text style={styles.cell}>{item.marca}</Text>
+              <View style={styles.brandCell}>
+                <Text style={styles.text}>{item.marca}</Text>
               </View>
             </Link>
           )}
-
+          ListHeaderComponent={
+            <View style={styles.row}>
+              <Text style={styles.headerCellStatus}>Status</Text>
+              <Text style={styles.headerCellDescription}>Descrição</Text>
+              <Text style={styles.headerCellBrand}>Marca</Text>
+            </View>
+          }
           contentContainerStyle={styles.listContent}
         />
       </ScrollView>
@@ -53,59 +60,74 @@ const EquipmentTable2: React.FC<EquipmentTableProps> = ({ equipments }) => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
   },
-  tableContainer: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: 'White',
   },
-  headerCell: {
-    flex: 1,
+  headerCellStatus: {
+    width: 70,
     fontWeight: 'bold',
     textAlign: 'center',
-    padding: 5,
+    padding: 10,
     backgroundColor: '#104861',
     color: 'white',
+    borderRightWidth: 1,
+    borderRightColor: 'White',
   },
-  cell: {
-    flex: 1,
+  headerCellDescription: {
+    width: 150,
+    fontWeight: 'bold',
     textAlign: 'center',
-    color: 'white',
-    padding: 5,
-  },
-  cell2: {
+    padding: 10,
+    backgroundColor: '#104861',
     color: 'white',
     borderRightWidth: 1,
-    borderRightColor: '#ccc',
+    borderRightColor: 'White',
+  },
+  headerCellBrand: {
+    width: 80,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 10,
+    backgroundColor: '#104861',
+    color: 'white',
+    borderRightWidth: 1,
+    borderRightColor: 'White',
   },
   statusContainer: {
-    flex: 1,
-    flexDirection: 'row',
+    width: 70,
     justifyContent: 'center',
     alignItems: 'center',
-    padding:5,
+    padding: 10,
+  },
+  descriptionCell: {
+    width: 150,
+    padding: 10,
+    borderRightWidth: 1,
+    borderRightColor: 'White',
+  },
+  brandCell: {
+    width: 80,
+    padding: 10,
+    borderRightWidth: 1,
+    borderRightColor: 'White',
+  },
+  text: {
+    textAlign: 'center',
+    color: 'White',
   },
   statusIndicator: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    
-    
   },
   listContent: {
     paddingBottom: 0,

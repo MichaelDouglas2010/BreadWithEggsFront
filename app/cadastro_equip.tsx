@@ -1,33 +1,38 @@
-import { useState } from 'react'
-import { View, Text, TextInput, ScrollView } from 'react-native'
-import { useAuth } from '../context/auth'
-import styles from '../components/styles'
-import { Button } from 'react-native-paper'
-import { router } from 'expo-router'
-import api from '../helpers/axios'
+import { useState } from 'react';
+import { View, Text, TextInput, ScrollView } from 'react-native';
+import { useAuth } from '../context/auth';
+import styles from '../components/styles';
+import { Button } from 'react-native-paper';
+import { router } from 'expo-router';
+import api from '../helpers/axios';
 
 export default function CadastrarEquip() {
-  const { user } = useAuth()
-  const [description, setDescription] = useState('') // Descrição do equipamento
-  const [brand, setBrand] = useState('') // Marca do equipamento
-  const [status, setStatus] = useState('') // Status do equipamento
+  const { user } = useAuth();
+  const [description, setDescription] = useState(''); // Descrição do equipamento
+  const [marca, setMarca] = useState(''); // Marca do equipamento
+  const [status, setStatus] = useState('ativo'); // Status do equipamento, padrão "ativo"
+
+  const generateQRCodeData = () => {
+    return Math.random().toString(36).substr(2, 12);
+  };
 
   const handleRegister = async () => {
     try {
       const response = await api.post('/equipment', {
         description,
-        brand,
+        marca,
         status,
-      })
-      console.log('Equipamento cadastrado com sucesso:', response.data)
-      // Limpa os campos após o cadastro
-      setDescription('')
-      setBrand('')
-      setStatus('')
+        dataEntrada: new Date(),
+        qrCodeData: generateQRCodeData()
+      });
+      console.log('Equipamento cadastrado com sucesso:', response.data);
+      setDescription('');
+      setMarca('');
+      setStatus('ativo');
     } catch (e) {
-      console.log("Erro ao cadastrar equipamento: " + e)
+      console.log("Erro ao cadastrar equipamento: " + e);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -52,8 +57,8 @@ export default function CadastrarEquip() {
           <TextInput
             style={styles.searchInput}
             placeholder="Insira a marca do equipamento"
-            value={brand}
-            onChangeText={setBrand}
+            value={marca}
+            onChangeText={setMarca}
           />
         </View>
 
@@ -67,15 +72,25 @@ export default function CadastrarEquip() {
           />
         </View>
 
-        {/* Botão de Cadastrar */}
-        <Button mode="contained" style={styles.searchButton} onPress={handleRegister}>
-          Cadastrar
-        </Button>
+        {/* Centralizar Botões */}
+        <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <Button 
+            mode="contained" 
+            style={[styles.searchButton, { width: 150, height: 50 }]} 
+            onPress={handleRegister}
+          >
+            Cadastrar
+          </Button>
 
-        <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/selec_equip')}>
-          Voltar
-        </Button>
+          <Button 
+            mode="contained" 
+            style={[styles.searchButton, { width: 150, height: 50, marginTop: 10 }]} 
+            onPress={() => router.push('/selec_equip')}
+          >
+            Voltar
+          </Button>
+        </View>
       </ScrollView>
     </View>
-  )
+  );
 }
