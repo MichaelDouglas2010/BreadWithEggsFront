@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'White',
+    borderBottomColor: 'white',
   },
   headerCellStatus: {
     width: 70,
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#104861',
     color: 'white',
     borderRightWidth: 1,
-    borderRightColor: 'White',
+    borderRightColor: 'white',
   },
   headerCellDescription: {
     width: 150,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#104861',
     color: 'white',
     borderRightWidth: 1,
-    borderRightColor: 'White',
+    borderRightColor: 'white',
   },
   headerCellBrand: {
     width: 80,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#104861',
     color: 'white',
     borderRightWidth: 1,
-    borderRightColor: 'White',
+    borderRightColor: 'white',
   },
   statusContainer: {
     width: 70,
@@ -112,17 +112,17 @@ const styles = StyleSheet.create({
     width: 150,
     padding: 10,
     borderRightWidth: 1,
-    borderRightColor: 'White',
+    borderRightColor: 'white',
   },
   brandCell: {
     width: 80,
     padding: 10,
     borderRightWidth: 1,
-    borderRightColor: 'White',
+    borderRightColor: 'white',
   },
   text: {
     textAlign: 'center',
-    color: 'White',
+    color: 'white',
   },
   statusIndicator: {
     width: 10,

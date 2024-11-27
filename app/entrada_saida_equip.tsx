@@ -60,7 +60,7 @@ export default function ConsultarEquip() {
           Buscar
         </Button>
       )}
-      {errorMessage ? <Text style={[styles.errorText, { color: 'red' }]}>{errorMessage}</Text> : null}
+      {errorMessage ? <Text style={[{ color: 'red' }]}>{errorMessage}</Text> : null}
       {filter.length > 0 && <EquipmentTable equipments={filter} navigation={undefined} />}
     </View>
   );
