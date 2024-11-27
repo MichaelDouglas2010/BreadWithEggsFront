@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { EquipmentGet } from '../interfaces/equipment';
 import { Link } from 'expo-router';
 
+//Tabela consultar_equip
+
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
 }
