@@ -78,7 +78,7 @@ export default function ExcluirEquip() {
         <EquipmentTable equipments={filter} />
         {/* Botões ou outros conteúdos */}
       </ScrollView>
-      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
+      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/selec_equip')}>
         Voltar
       </Button>
     </View>

@@ -60,7 +60,7 @@ export default function ConsultarEquipDetalhe() {
         <View style={styles.container}>
             {equipment && (
                 <View>
-                    <View style={styles.pageTitleBox}>
+                    <View style={[styles.pageTitleBox, {backgroundColor:'#C1B851'}]}>
                         <Text style={styles.pageTitleLabel}>{equipment?.description}</Text>
                     </View>
                     <ScrollView style={[styles.consEquipMenu, { marginBottom: 10 }]}>
@@ -87,7 +87,7 @@ export default function ConsultarEquipDetalhe() {
                         <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/alterar_equip')}>
                             Cancelar
                         </Button>
-                        <Button mode="contained" style={[styles.searchButton, { marginLeft: 40, backgroundColor: '#145B77' }]} onPress={handleUpdate}>
+                        <Button mode="contained" style={[styles.searchButton, { marginLeft: 40, backgroundColor: '#C1B851' }]} onPress={handleUpdate}>
                             Alterar
                         </Button>
 

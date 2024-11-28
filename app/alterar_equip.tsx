@@ -51,7 +51,7 @@ export default function AlterarEquip() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
+      <View style={[styles.pageTitleBox, {backgroundColor:'#C1B851'}]}>
         <Text style={styles.pageTitleLabel}>Alterar Equipamentos</Text>
       </View>
 
