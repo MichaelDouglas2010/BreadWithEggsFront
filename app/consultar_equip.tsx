@@ -7,6 +7,7 @@ import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import axios from 'axios'
 import EquipmentTable2 from '../components/tabelas/Equipament_tableCopy'
+import { router } from 'expo-router'
 
 export default function ConsultarEquip() {
 
@@ -54,16 +55,17 @@ export default function ConsultarEquip() {
         <Text style={styles.pageTitleLabel}>Consultar Equipamento</Text>
       </View>
 
+
       {/* Barra de Pesquisa */}
       <View >
         <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
         <TextInput
-        style={styles.searchInput}
-        placeholder="Insira a descrição ou ID do equip"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        accessibilityLabel="Campo de busca de equipamento"
-      />
+          style={styles.searchInput}
+          placeholder="Insira a descrição ou ID do equip"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          accessibilityLabel="Campo de busca de equipamento"
+        />
 
         {/* Botão Buscar */}
         <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
@@ -71,11 +73,14 @@ export default function ConsultarEquip() {
         </Button>
       </View>
 
-      <ScrollView horizontal style={[styles.consEquipMenu]}>
-        <View style={{ marginBottom: 5}} />
-            <EquipmentTable2 equipments={filter}/>
+      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
+        <View style={{ marginBottom: 5 }} />
+        <EquipmentTable2 equipments={filter} />
         {/* Botões ou outros conteúdos */}
       </ScrollView>
+      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
+        Voltar
+      </Button>
     </View>
   )
 }
