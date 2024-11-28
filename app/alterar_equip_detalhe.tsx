@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, ScrollView, StyleSheet, Alert } from 'react-native'
 import styles from '../components/styles'
+import RNPickerSelect from 'react-native-picker-select';
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -62,7 +63,7 @@ export default function ConsultarEquipDetalhe() {
         <View style={styles.container}>
             {equipment && (
                 <View>
-                    <View style={[styles.pageTitleBox, {backgroundColor:'#C1B851'}]}>
+                    <View style={[styles.pageTitleBox, { backgroundColor: '#C1B851' }]}>
                         <Text style={styles.pageTitleLabel}>{equipment?.description}</Text>
                     </View>
                     <ScrollView style={[styles.consEquipMenu, { marginBottom: 10 }]}>
@@ -79,10 +80,19 @@ export default function ConsultarEquipDetalhe() {
                                 value={equipment?.marca}
                                 onChangeText={(text) => setEquipment({ ...equipment, marca: text })}
                             />
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={localStyles.text}>Status: </Text>
-                                <Text style={[localStyles.text, { color: getStatusColor(equipment?.status) }]}>{equipment?.status.charAt(0).toUpperCase()}{equipment?.status.slice(1).toLowerCase()}</Text>
-                            </View>
+                            <Text style={{ color: 'white' }}>Status</Text>
+                            <RNPickerSelect
+                                onValueChange={(value) => setEquipment({ ...equipment, status: value })}
+                                items={[
+                                    { label: 'Ativo', value: 'ativo' },
+                                    { label: 'Inativo', value: 'inativo' },
+                                    { label: 'Emprestado', value: 'emprestado' },
+                                    { label: 'Em Manutenção', value: 'em manutenção' },
+                                ]}
+                                value={equipment.status}
+                                style={pickerSelectStyles}
+                                placeholder={{ label: 'Selecione um status', value: null }}
+                            />
                         </View>
                     </ScrollView>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -107,3 +117,30 @@ const localStyles = StyleSheet.create({
         marginBottom: 5,
     }
 })
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        height: 60,
+        width: "70%",
+        borderColor: "#ccc",
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+        backgroundColor: "#f9f9f9",
+        fontSize: 12,
+        marginBottom: 10,
+        alignSelf: "flex-start",
+    },
+    inputAndroid: {
+        height: 60,
+        width: "70%",
+        borderColor: "#ccc",
+        borderWidth: 1,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+        backgroundColor: "#f9f9f9",
+        fontSize: 12,
+        marginBottom: 10,
+        alignSelf: "flex-start",
+    },
+});
