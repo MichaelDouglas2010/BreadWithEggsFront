@@ -59,21 +59,21 @@ export default function EntradaSaidaEquip() {
       <View >
         <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
         <TextInput
-        style={styles.searchInput}
-        placeholder="Insira a descrição ou ID do equip"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        accessibilityLabel="Campo de busca de equipamento"
-      />
+          style={styles.searchInput}
+          placeholder="Insira a descrição ou ID do equip"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          accessibilityLabel="Campo de busca de equipamento"
+        />
 
         <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
           Buscar
         </Button>
       </View>
 
-      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
-        <View style={{ marginBottom: 5}} />
-            <EquipmentTable equipments={filter}/>
+      <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
+        <View style={{ marginBottom: 5 }} />
+        <EquipmentTable equipments={filter} />
       </ScrollView>
       <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
         Voltar

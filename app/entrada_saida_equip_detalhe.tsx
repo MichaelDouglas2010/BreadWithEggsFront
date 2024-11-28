@@ -14,15 +14,15 @@ export default function EntradaSaidaEquipDetalhe() {
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-          case 'ativo':
-            return 'green';
-          case 'inativo':
-            return 'red';
-          case 'emprestado':
-            return 'yellow';
-          default:
-            return 'gray';
-        }
+      case 'ativo':
+        return 'green';
+      case 'inativo':
+        return 'red';
+      case 'emprestado':
+        return 'yellow';
+      default:
+        return 'gray';
+    }
   };
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function EntradaSaidaEquipDetalhe() {
       <View style={styles.pageTitleBox}>
         <Text style={styles.pageTitleLabel}>{equipment?.description}</Text>
       </View>
-      <ScrollView style={[styles.consEquipMenu]}>
+      <ScrollView style={[styles.consEquipMenu, { marginBottom: 10 }]}>
         <Text style={[localStyles.text, { marginTop: 20 }]}>Descrição: {equipment?.description}</Text>
         <Text style={localStyles.text}>Marca: {equipment?.marca}</Text>
         <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -83,10 +83,17 @@ export default function EntradaSaidaEquipDetalhe() {
           style={pickerSelectStyles}
           placeholder={{ label: 'Selecione um status', value: null }}
         />
-        <Button mode="contained" style={styles.searchButton} onPress={handleUpdate}>
+
+      </ScrollView>
+
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/entrada_saida_equip')}>
+          Voltar
+        </Button>
+        <Button mode="contained" style={[styles.searchButton, {marginLeft: 40}]} onPress={handleUpdate}>
           Alterar
         </Button>
-      </ScrollView>
+      </View>
     </View>
   );
 }
