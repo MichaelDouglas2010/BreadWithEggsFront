@@ -21,8 +21,8 @@ export default function Home() {
         <View style={{ marginBottom: 15 }} />
 
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/consultar_equip')}>Consultar Equipamento</Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/entrada_saida_equip')}>Inserir Entrada / Saída</Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>Cadastro de Equipamentos</Button>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/entrada_saida_equip')}>Alterar Disponibilidade</Button>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>Gerenciar Equipamentos</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/relatorios')}>Relatórios</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/camera')}>Camera</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/about')}>Sobre</Button>

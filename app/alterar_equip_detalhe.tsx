@@ -40,6 +40,8 @@ export default function ConsultarEquipDetalhe() {
                 description: equipment.description,
                 marca: equipment.marca,
                 status: equipment.status,
+                dataEntrada: equipment.dataEntrada,
+                qrCodeData: equipment.qrCodeData
             })
             Alert.alert('Sucesso', 'Equipamento alterado com sucesso!')
             router.push('/alterar_equip')

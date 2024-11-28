@@ -43,7 +43,9 @@ export default function EntradaSaidaEquipDetalhe() {
       await api.put(`/equipment/${equipment._id}`, {
         description: equipment.description,
         marca: equipment.marca,
-        status: selectedStatus,
+        status: equipment.status,
+        dataEntrada: equipment.dataEntrada,
+        qrCodeData: equipment.qrCodeData
       })
       Alert.alert('Sucesso', 'Equipamento alterado com sucesso!')
       router.push('/entrada_saida_equip')
@@ -90,7 +92,7 @@ export default function EntradaSaidaEquipDetalhe() {
         <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/entrada_saida_equip')}>
           Voltar
         </Button>
-        <Button mode="contained" style={[styles.searchButton, {marginLeft: 40}]} onPress={handleUpdate}>
+        <Button mode="contained" style={[styles.searchButton, { marginLeft: 40 }]} onPress={handleUpdate}>
           Alterar
         </Button>
       </View>
