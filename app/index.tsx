@@ -10,7 +10,7 @@ export default function Login() {
   const { user, handleLogin, setUser } = useAuth()
   useFocusEffect(
     React.useCallback(() => {
-      setUser({ email: '', password: '', name: '', team: '' })
+      setUser({id:'', email: '', password: '', name: '', team: '' })
     }, [])
   )
 

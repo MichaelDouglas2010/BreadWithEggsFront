@@ -16,7 +16,7 @@ interface AuthProviderProps {
 const AuthContext = createContext<IAuthContext>({} as IAuthContext)
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User>({ email: '', password: '', name: '', team: '' })
+  const [user, setUser] = useState<User>({id:'', email: '', password: '', name: '', team: '' })
 
   async function handleLogin() {
     try {
