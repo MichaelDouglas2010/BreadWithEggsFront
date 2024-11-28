@@ -6,8 +6,10 @@ import api from '../helpers/axios';
 import { EquipmentGet } from '../components/interfaces/equipment';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Button } from 'react-native-paper';
+import { useAuth } from '../context/auth';
 
 export default function EntradaSaidaEquipDetalhe() {
+  const { user } = useAuth()
   const [equipment, setEquipment] = useState<EquipmentGet>();
   const [selectedStatus, setSelectedStatus] = useState<string>(''); // Estado para armazenar o status selecionado
   const { equipId } = useLocalSearchParams();
@@ -71,21 +73,10 @@ export default function EntradaSaidaEquipDetalhe() {
           </Text>
         </View>
 
-        <Text style={[localStyles.text, { marginTop: 30 }]}>ALTERAR STATUS PARA:</Text>
-
-        <RNPickerSelect
-          onValueChange={(value) => handleStatusChange(value)}
-          items={[
-            { label: 'Ativo', value: 'ativo' },
-            { label: 'Inativo', value: 'inativo' },
-            { label: 'Emprestado', value: 'emprestado' },
-            { label: 'Em Manutenção', value: 'em manutenção' },
-          ]}
-          value={selectedStatus} // Exibe o status selecionado
-          style={pickerSelectStyles}
-          placeholder={{ label: 'Selecione um status', value: null }}
-        />
-
+        <View style={styles.pageContextBox}>
+        <Text style={[localStyles.text, {fontSize:10}]}>Funcionário: {user?.name}</Text>
+        <Text style={[localStyles.text, {fontSize:10}]}>Setor: {user?.team}</Text>
+</View>
       </ScrollView>
 
       <View style={{ flex: 1, flexDirection: 'row' }}>

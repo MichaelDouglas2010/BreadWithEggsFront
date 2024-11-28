@@ -55,6 +55,13 @@ const styles = StyleSheet.create({
     borderColor: '#53A9CF',
     borderWidth:2,
   },
+  pageContextBox: {
+    backgroundColor:"#104861",
+    marginBottom: 5,
+    padding: 5,
+    borderColor: 'white',
+    borderWidth:1,
+  },
 
   // Estilos para a tabela
   row: {
