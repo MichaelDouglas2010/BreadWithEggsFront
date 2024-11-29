@@ -23,7 +23,7 @@ export default function Home() {
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/consultar_equip')}>Consultar Equipamento</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/entrada_saida_equip')}>Registrar Uso de Equipamento</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>Gerenciar Equipamentos</Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>Manutenção</Button>
+        {/* <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>Manutenção</Button> */}
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/relatorios')}>Relatórios</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/camera')}>Camera</Button>
         <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/about')}>Sobre</Button>
