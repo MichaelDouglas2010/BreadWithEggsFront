@@ -8,7 +8,7 @@ import axios from 'axios'
 import { router } from 'expo-router'
 import EquipmentTable from '../components/tabelas/Equipment_table_relatorio'
 
-export default function ConsultarEquip() {
+export default function RelatorioEquip() {
 
   const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
 
@@ -51,7 +51,7 @@ export default function ConsultarEquip() {
   return (
     <View style={styles.container}>
       <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Consultar Equipamento</Text>
+        <Text style={styles.pageTitleLabel}>Consultar Relatório</Text>
       </View>
 
 
