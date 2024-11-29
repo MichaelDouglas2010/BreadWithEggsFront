@@ -70,7 +70,7 @@ export default function EntradaSaidaEquipDetalhe() {
           endTime: date2,
           totalHours: ((date2.getTime() - date1.getTime()) / (1000 * 60 * 60)).toFixed(1)
         })
-        Alert.alert('Sucesso', 'Equipamento alterado com sucesso!')
+        Alert.alert('Sucesso', 'Registro criado com sucesso!')
         router.push('/entrada_saida_equip')
       }
     } catch (e) {
