@@ -1,70 +1,87 @@
-import { useState, useEffect } from 'react'
-import { View, Text, ScrollView, Alert } from 'react-native'
+import { useState } from 'react'
+import { View, Text, TextInput, ScrollView } from 'react-native'
 import { useAuth } from '../context/auth'
 import styles from '../components/styles'
 import { Button } from 'react-native-paper'
 import api from '../helpers/axios'
+import { EquipmentGet } from '../components/interfaces/equipment'
+import axios from 'axios'
+import EquipmentTable from '../components/tabelas/Equipment_table_delete'
 import { router } from 'expo-router'
 
-interface Equipment {
-  _id: string
-  description: string
-  brand: string
-  status: string
-}
-
 export default function ExcluirEquip() {
-  const { user } = useAuth()
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]) // Lista de equipamentos
 
-  // Função para buscar a lista de equipamentos
-  const fetchEquipment = async () => {
+  const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
+
+  const [filter, setFilter] = useState<EquipmentGet[]>([])
+
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSearch = async () => {
+    setIsLoading(true)
     try {
-      const response = await api.get('/equipment')
-      setEquipmentList(response.data)
-    } catch (e) {
-      console.log("Erro ao buscar equipamentos: " + e)
+      let response: { data: EquipmentGet[] }
+      if (searchQuery) {
+        response = await api.get(`/equipment?search=${searchQuery}`)
+        if (response.data.length > 0) {
+          setFilter(response.data)
+          setErrorMessage('')
+        } else {
+          setFilter([])
+          setErrorMessage('Equipamento inexistente')
+        }
+      } else {
+        response = await api.get('/equipment')
+        setFilter(response.data)
+        setErrorMessage('')
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error response:', error.response)
+        setErrorMessage(`Erro: ${error.response.data.message || 'Erro ao buscar equipamentos'}`)
+      } else {
+        console.error('Erro na busca: ', error)
+        setErrorMessage('Erro ao buscar equipamentos')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
-
-  // Função para excluir um equipamento por ID
-  const handleDelete = async (equipmentId: string) => {
-    try {
-      await api.delete(`/equipment/${equipmentId}`)
-      Alert.alert('Sucesso', 'Equipamento excluído com sucesso!')
-      // Atualiza a lista após a exclusão
-      setEquipmentList(equipmentList.filter(equip => equip._id !== equipmentId))
-    } catch (e) {
-      console.log("Erro ao excluir equipamento: " + e)
-      Alert.alert('Erro', 'Não foi possível excluir o equipamento.')
-    }
-  }
-
-  useEffect(() => {
-    fetchEquipment() // Carrega a lista ao montar a tela
-  }, [])
 
   return (
     <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
+      <View style={[styles.pageTitleBox, {backgroundColor:'#75181D'}]}>
         <Text style={styles.pageTitleLabel}>Excluir Equipamento</Text>
       </View>
 
-      {/* Lista de Equipamentos */}
-      <ScrollView style={[styles.consEquipMenu]}>
-        {equipmentList.map((equip) => (
-          <View key={equip._id} style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottomWidth: 1, borderBottomColor: 'white' }}>
-            <Text style={{ color: 'white' }}>{equip.description} - {equip.brand}</Text>
-            <Button mode="contained" color="red" onPress={() => handleDelete(equip._id)}>
-              Excluir
-            </Button>
-          </View>
-        ))}
-      </ScrollView>
 
+      {/* Barra de Pesquisa */}
+      <View >
+        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Insira a descrição ou ID do equip"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          accessibilityLabel="Campo de busca de equipamento"
+        />
+
+        {/* Botão Buscar */}
+        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
+          Buscar
+        </Button>
+      </View>
+
+      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
+        <View style={{ marginBottom: 5 }} />
+        <EquipmentTable equipments={filter} />
+        {/* Botões ou outros conteúdos */}
+      </ScrollView>
       <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/selec_equip')}>
         Voltar
       </Button>
     </View>
   )
 }
+

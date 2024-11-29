@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
 import { useAuth } from '../context/auth';
 import styles from '../components/styles';
 import { Button } from 'react-native-paper';
@@ -10,7 +10,6 @@ export default function CadastrarEquip() {
   const { user } = useAuth();
   const [description, setDescription] = useState(''); // Descrição do equipamento
   const [marca, setMarca] = useState(''); // Marca do equipamento
-  const [status, setStatus] = useState('ativo'); // Status do equipamento, padrão "ativo"
 
   const generateQRCodeData = () => {
     return Math.random().toString(36).substr(2, 12);
@@ -21,15 +20,16 @@ export default function CadastrarEquip() {
       const response = await api.post('/equipment', {
         description,
         marca,
-        status,
+        status: 'ativo',
         dataEntrada: new Date(),
         qrCodeData: generateQRCodeData()
       });
-      console.log('Equipamento cadastrado com sucesso:', response.data);
+      //console.log('Equipamento cadastrado com sucesso:', response.data);
+      Alert.alert('Sucesso', 'Equipamento cadastrado com sucesso!')
       setDescription('');
       setMarca('');
-      setStatus('ativo');
     } catch (e) {
+      Alert.alert('Erro', 'Erro ao cadastrar equipamento!')
       console.log("Erro ao cadastrar equipamento: " + e);
     }
   };
@@ -59,16 +59,6 @@ export default function CadastrarEquip() {
             placeholder="Insira a marca do equipamento"
             value={marca}
             onChangeText={setMarca}
-          />
-        </View>
-
-        <View style={{ marginBottom: 10 }}>
-          <Text style={{ fontSize: 16, color: 'white' }}>Status</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Insira o status do equipamento"
-            value={status}
-            onChangeText={setStatus}
           />
         </View>
 

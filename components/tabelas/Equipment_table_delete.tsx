@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { EquipmentGet } from '../interfaces/equipment';
 import { Link } from 'expo-router';
 
-//Tabela entrada_saida_equip
+//Tabela consultar_equip
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
@@ -32,7 +32,7 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
           renderItem={({ item }) => (
             <Link
               href={{
-                pathname: '/entrada_saida_equip_detalhe', 
+                pathname: '/excluir_equip_detalhe', 
                 params: { equipId: String(item._id) }
               }}
               style={styles.row}

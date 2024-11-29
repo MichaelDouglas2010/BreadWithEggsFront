@@ -1,112 +1,84 @@
-import { useState, useEffect } from 'react'
-import { View, Text, ScrollView, TextInput, Alert } from 'react-native'
-import { useAuth } from '../context/auth'
+import { useState } from 'react'
+import { View, Text, TextInput, ScrollView } from 'react-native'
 import styles from '../components/styles'
 import { Button } from 'react-native-paper'
 import api from '../helpers/axios'
-import { router } from 'expo-router'
+import { EquipmentGet } from '../components/interfaces/equipment'
+import axios from 'axios'
 
-interface Equipment {
-  _id: string
-  description: string
-  brand: string
-  status: string
-}
+import { router } from 'expo-router'
+import EquipmentTable from '../components/tabelas/Equipment_table_update'
 
 export default function AlterarEquip() {
-  const { user } = useAuth()
-  const [equipmentList, setEquipmentList] = useState<Equipment[]>([]) // Lista de equipamentos
-  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null) // Equipamento selecionado para edição
 
-  // Função para buscar a lista de equipamentos
-  const fetchEquipment = async () => {
+  const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
+
+  const [filter, setFilter] = useState<EquipmentGet[]>([])
+
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSearch = async () => {
+    setIsLoading(true)
     try {
-      const response = await api.get('/equipment')
-      setEquipmentList(response.data)
-    } catch (e) {
-      console.log("Erro ao buscar equipamentos: " + e)
+      let response: { data: EquipmentGet[] }
+      if (searchQuery) {
+        response = await api.get(`/equipment?search=${searchQuery}`)
+        if (response.data.length > 0) {
+          setFilter(response.data)
+          setErrorMessage('')
+        } else {
+          setFilter([])
+          setErrorMessage('Equipamento inexistente')
+        }
+      } else {
+        response = await api.get('/equipment')
+        setFilter(response.data)
+        setErrorMessage('')
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error('Error response:', error.response)
+        setErrorMessage(`Erro: ${error.response.data.message || 'Erro ao buscar equipamentos'}`)
+      } else {
+        console.error('Erro na busca: ', error)
+        setErrorMessage('Erro ao buscar equipamentos')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
-
-  // Função para atualizar os dados de um equipamento
-  const handleUpdate = async () => {
-    if (!selectedEquipment) return
-
-    try {
-      await api.put(`/equipment/${selectedEquipment._id}`, {
-        description: selectedEquipment.description,
-        brand: selectedEquipment.brand,
-        status: selectedEquipment.status,
-      })
-      Alert.alert('Sucesso', 'Equipamento alterado com sucesso!')
-      fetchEquipment() // Atualiza a lista de equipamentos
-      setSelectedEquipment(null) // Limpa o equipamento selecionado após a atualização
-    } catch (e) {
-      console.log("Erro ao atualizar equipamento: " + e)
-      Alert.alert('Erro', 'Não foi possível alterar o equipamento.')
-    }
-  }
-
-  // Função para selecionar o equipamento para edição
-  const selectEquipmentForEdit = (equipment: Equipment) => {
-    setSelectedEquipment(equipment)
-  }
-
-  useEffect(() => {
-    fetchEquipment() // Carrega a lista ao montar a tela
-  }, [])
 
   return (
     <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Alterar Equipamento</Text>
+      <View style={[styles.pageTitleBox, {backgroundColor:'#C1B851'}]}>
+        <Text style={styles.pageTitleLabel}>Alterar Equipamentos</Text>
       </View>
 
-      {/* Lista de Equipamentos */}
-      <ScrollView style={[styles.consEquipMenu]}>
-        {equipmentList.map((equip) => (
-          <View key={equip._id} style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottomWidth: 1, borderBottomColor: 'white' }}>
-            <Text style={{ color: 'white' }}>{equip.description} - {equip.brand}</Text>
-            <Button mode="contained" color="blue" onPress={() => selectEquipmentForEdit(equip)}>
-              Alterar
-            </Button>
-          </View>
-        ))}
+      {/* Barra de Pesquisa */}
+      <View >
+        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
+        <TextInput
+        style={styles.searchInput}
+        placeholder="Insira a descrição ou ID do equip"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        accessibilityLabel="Campo de busca de equipamento"
+      />
+
+        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
+          Buscar
+        </Button>
+      </View>
+
+      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
+        <View style={{ marginBottom: 5}} />
+            <EquipmentTable equipments={filter}/>
       </ScrollView>
-
-      {/* Formulário de Edição */}
-      {selectedEquipment && (
-        <View style={{ padding: 20 }}>
-          <Text style={{ color: 'white' }}>Descrição</Text>
-          <TextInput
-            style={[styles.searchInput, { color: 'white', backgroundColor: '#333' }]}
-            value={selectedEquipment.description}
-            onChangeText={(text) => setSelectedEquipment({ ...selectedEquipment, description: text })}
-          />
-          <Text style={{ color: 'white' }}>Marca</Text>
-          <TextInput
-            style={[styles.searchInput, { color: 'white', backgroundColor: '#333' }]}
-            value={selectedEquipment.brand}
-            onChangeText={(text) => setSelectedEquipment({ ...selectedEquipment, brand: text })}
-          />
-          <Text style={{ color: 'white' }}>Status</Text>
-          <TextInput
-            style={[styles.searchInput, { color: 'white', backgroundColor: '#333' }]}
-            value={selectedEquipment.status}
-            onChangeText={(text) => setSelectedEquipment({ ...selectedEquipment, status: text })}
-          />
-          <Button mode="contained" style={styles.searchButton} onPress={handleUpdate}>
-            Salvar Alterações
-          </Button>
-          <Button mode="outlined" style={{ marginTop: 10 }} onPress={() => setSelectedEquipment(null)}>
-            Cancelar
-          </Button>
-        </View>
-      )}
-
       <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/selec_equip')}>
         Voltar
       </Button>
     </View>
   )
 }
+

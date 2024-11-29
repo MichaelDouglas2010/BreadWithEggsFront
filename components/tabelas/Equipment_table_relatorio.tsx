@@ -32,7 +32,7 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
           renderItem={({ item }) => (
             <Link
               href={{
-                pathname: '/entrada_saida_equip_detalhe', 
+                pathname: '/relatorio_detalhe', 
                 params: { equipId: String(item._id) }
               }}
               style={styles.row}

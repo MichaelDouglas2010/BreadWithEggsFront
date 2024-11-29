@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { View, Text, TextInput, ScrollView } from 'react-native'
-import { useAuth } from '../context/auth'
 import styles from '../components/styles'
 import { Button } from 'react-native-paper'
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import axios from 'axios'
-import EquipmentTable from '../components/tabelas/Equipament_table'
 import { router } from 'expo-router'
+import EquipmentTable from '../components/tabelas/Equipment_table_relatorio'
 
-export default function EntradaSaidaEquip() {
+export default function RelatorioEquip() {
 
   const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
 
@@ -52,8 +51,9 @@ export default function EntradaSaidaEquip() {
   return (
     <View style={styles.container}>
       <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Entrada e Saída de Equipamentos</Text>
+        <Text style={styles.pageTitleLabel}>Consultar Relatório</Text>
       </View>
+
 
       {/* Barra de Pesquisa */}
       <View >
@@ -66,14 +66,16 @@ export default function EntradaSaidaEquip() {
           accessibilityLabel="Campo de busca de equipamento"
         />
 
+        {/* Botão Buscar */}
         <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
           Buscar
         </Button>
       </View>
 
-      <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
+      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
         <View style={{ marginBottom: 5 }} />
         <EquipmentTable equipments={filter} />
+        {/* Botões ou outros conteúdos */}
       </ScrollView>
       <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
         Voltar
