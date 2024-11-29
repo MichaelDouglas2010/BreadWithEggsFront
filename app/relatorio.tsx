@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { View, Text, TextInput, ScrollView } from 'react-native'
-import { useAuth } from '../context/auth'
 import styles from '../components/styles'
 import { Button } from 'react-native-paper'
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import axios from 'axios'
-import EquipmentTable2 from '../components/tabelas/Equipament_tableCopy'
 import { router } from 'expo-router'
+import EquipmentTable from '../components/tabelas/Equipment_table_relatorio'
 
 export default function ConsultarEquip() {
 
@@ -75,7 +74,7 @@ export default function ConsultarEquip() {
 
       <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
         <View style={{ marginBottom: 5 }} />
-        <EquipmentTable2 equipments={filter} />
+        <EquipmentTable equipments={filter} />
         {/* Botões ou outros conteúdos */}
       </ScrollView>
       <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>

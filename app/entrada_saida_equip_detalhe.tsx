@@ -6,20 +6,15 @@ import { EquipmentGet } from '../components/interfaces/equipment'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Button, TextInput } from 'react-native-paper'
 import { useAuth } from '../context/auth'
-import { UsageRecordGet } from '../components/interfaces/usage-record'
 import { TextInputMask } from 'react-native-masked-text';
 
 export default function EntradaSaidaEquipDetalhe() {
   const { user } = useAuth()
   const [equipment, setEquipment] = useState<EquipmentGet>()
-  const [usage, setUsage] = useState<UsageRecordGet>()
   const [activity, setActivity] = useState<string>('')
   const [timeIn, setTimeIn] = useState<string[]>([''])
   const [timeOut, setTimeOut] = useState<string[]>([''])
   const { equipId } = useLocalSearchParams()
-
-  const [date, setDate] = useState<Date | null>(null)
-  const [time, setTime] = useState<string | null>(null)
 
   const getStatusColor = (status?: string) => {
     switch (status) {
