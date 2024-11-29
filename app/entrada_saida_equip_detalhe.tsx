@@ -62,9 +62,9 @@ export default function EntradaSaidaEquipDetalhe() {
       else if(date1.getTime() > date2.getTime()){Alert.alert('Erro', 'Data de retirada mais recente que data de devolução!')}
       else if(activity == ''){Alert.alert('Erro', 'Descreva a atividade!')}
       else {
-        await api.post(`/usage/}`, {
+        await api.post(`/usage/`, {
           equipmentId: equipment._id.toString(),
-          userId: user.id,
+          userId: user._id,
           activity: activity,
           startTime: date1,
           endTime: date2,
