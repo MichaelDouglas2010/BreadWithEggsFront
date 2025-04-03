@@ -1,21 +1,21 @@
-import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture, BarcodeScanningResult } from 'expo-camera';
 import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as FileSystem from 'expo-file-system'; // For saving to device storage
-import * as Permissions from 'expo-permissions'; // For requesting storage permission
-
+import * as FileSystem from 'expo-file-system'; // Para salvar no armazenamento
+import * as Permissions from 'expo-permissions'; // Para permissões de armazenamento
 
 interface CameraData {
   uri: string;
-  // ... other properties if needed
 }
 
-export default function Camera() {
+export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+  const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false); // Alterna entre câmera normal e scanner de QR Code
+  const cameraRef = useRef<CameraView>(null);
 
-  // Function to convert captured image to base64
+  // Converte a imagem para Base64
   const convertImageToBase64 = async (uri: string): Promise<string> => {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -27,83 +27,103 @@ export default function Camera() {
     });
   };
 
-  // Function to save captured image to device storage
+  // Salva a imagem capturada no armazenamento
   const saveImageToAsyncStorage = async (base64Image: string) => {
     const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
     if (status !== 'granted') {
-      console.error('Storage permission not granted');
+      console.error('Permissão de armazenamento negada');
       return;
     }
 
-    const filename = `${Date.now()}.png`; // Generate unique filename
+    const filename = `${Date.now()}.png`;
     const directory = FileSystem.documentDirectory;
     const path = `${directory}/${filename}`;
 
     try {
       await FileSystem.writeAsStringAsync(path, base64Image, { encoding: FileSystem.EncodingType.Base64 });
-      console.log('Image saved to device storage:', path);
+      console.log('Imagem salva em:', path);
     } catch (error) {
-      console.error('Error saving image:', error);
+      console.error('Erro ao salvar imagem:', error);
     } finally {
-      setIsLoading(false); // Set loading indicator to false after saving
+      setIsLoading(false);
     }
   };
 
-  // Function to capture picture and save it
+  // Captura a imagem e salva
   const takePicture = async () => {
-    setIsLoading(true); // Set loading indicator to true before capture
+    setIsLoading(true);
 
-    const cameraRef = useRef<CameraView>(null);
+    if (!cameraRef.current) return;
 
-    const options = { quality: 1, skipProcessing: true }; // Capture options
-    const data: CameraData | CameraCapturedPicture  | null | undefined = await cameraRef.current?.takePictureAsync(options);
-
-    let base64Image: string | undefined;
+    const options = { quality: 1, skipProcessing: true };
+    const data: CameraData | CameraCapturedPicture | null | undefined = await cameraRef.current?.takePictureAsync(options);
 
     if (data) {
-      base64Image = await convertImageToBase64(data.uri); // Convert to base64
+      const base64Image = await convertImageToBase64(data.uri);
+      await saveImageToAsyncStorage(base64Image);
     } else {
-      console.error('Image capture canceled');
+      console.error('Captura de imagem cancelada');
     }
 
-    if (base64Image) {
-      await saveImageToAsyncStorage(base64Image);
+    setIsLoading(false);
+  };
+
+  // Função para escanear QR Code
+  const scanQRCode = (result: BarcodeScanningResult) => {
+    if (result.data) {
+      alert(`QR Code escaneado: ${result.data}`);
+      setIsScanning(false); // Volta para modo câmera normal após leitura
     }
   };
 
-  // Handle camera permissions
-  if (!permission) {
-    return <View />; // Permissions still loading
+  // Alterna a câmera entre frontal e traseira
+  function toggleCameraFacing() {
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
+  // Alterna entre modo normal e scanner de QR Code
+  function toggleScannerMode() {
+    setIsScanning(!isScanning);
+  }
+
+  if (!permission) return <View />;
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Text style={styles.message}>Precisamos da sua permissão para usar a câmera</Text>
+        <Button onPress={requestPermission} title="Conceder Permissão" />
       </View>
     );
   }
 
-  // Function to toggle camera facing
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing}
+        barcodeScannerSettings={{ barCodeTypes: ['qr'] }}
+        onBarcodeScanned={isScanning ? scanQRCode : undefined} // Ativa o scanner apenas quando necessário
+      >
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-            <Button title="Capture Photo" disabled={isLoading} onPress={takePicture} />
-            {isLoading && <Text>Capturing...</Text>}
-          </TouchableOpacity>  
+            <Text style={styles.text}>Inverter Câmera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleScannerMode}>
+            <Text style={styles.text}>{isScanning ? 'Modo Foto' : 'Modo QR Code'}</Text>
+          </TouchableOpacity>
+          {!isScanning && (
+            <TouchableOpacity style={styles.button} onPress={takePicture} disabled={isLoading}>
+              <Text style={styles.text}>Capturar Foto</Text>
+            </TouchableOpacity>
+          )}
+          {isLoading && <Text>Capturando...</Text>}
         </View>
       </CameraView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -117,18 +137,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
+    position: 'absolute',
+    bottom: 20,
     flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
+    justifyContent: 'space-evenly',
+    width: '100%',
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 10,
+    borderRadius: 10,
   },
   text: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     color: 'white',
   },

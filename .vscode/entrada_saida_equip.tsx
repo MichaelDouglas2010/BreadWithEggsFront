@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { View, Text, TextInput, ScrollView } from 'react-native'
-import { useAuth } from '../context/auth'
-import styles from '../components/styles'
+import { useAuth } from '../../context/auth'
+import styles from '../../components/styles'
 import { Button } from 'react-native-paper'
-import api from '../helpers/axios'
-import { EquipmentGet } from '../components/interfaces/equipment'
+import api from '../../helpers/axios'
+import { EquipmentGet } from '../../components/interfaces/equipment'
 import axios from 'axios'
-import EquipmentTable from '../components/tabelas/Equipament_table'
+import EquipmentTable from '../../components/tabelas/Equipament_table'
 import { router } from 'expo-router'
 
 export default function EntradaSaidaEquip() {
@@ -81,3 +81,4 @@ export default function EntradaSaidaEquip() {
     </View>
   )
 }
+

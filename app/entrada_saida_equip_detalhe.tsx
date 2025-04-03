@@ -6,15 +6,23 @@ import { EquipmentGet } from '../components/interfaces/equipment'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Button, TextInput } from 'react-native-paper'
 import { useAuth } from '../context/auth'
-import { TextInputMask } from 'react-native-masked-text';
+import { TextInputMask } from 'react-native-masked-text'
 
 export default function EntradaSaidaEquipDetalhe() {
   const { user } = useAuth()
   const [equipment, setEquipment] = useState<EquipmentGet>()
   const [activity, setActivity] = useState<string>('')
-  const [timeIn, setTimeIn] = useState<string[]>([''])
-  const [timeOut, setTimeOut] = useState<string[]>([''])
   const { equipId } = useLocalSearchParams()
+  
+  const getCurrentDateTime = () => {
+    const now = new Date()
+    const formattedDate = now.toLocaleDateString('pt-BR')
+    const formattedTime = now.toLocaleTimeString('pt-BR', { hour12: false })
+    return { date: formattedDate, time: formattedTime }
+  }
+  
+  const [timeIn, setTimeIn] = useState<string[]>([getCurrentDateTime().date, getCurrentDateTime().time])
+  const [timeOut, setTimeOut] = useState<string[]>([getCurrentDateTime().date, getCurrentDateTime().time])
 
   const getStatusColor = (status?: string) => {
     switch (status) {
@@ -51,8 +59,8 @@ export default function EntradaSaidaEquipDetalhe() {
     if (!equipment) return
 
     try {
-      const date1 = new Date(`${timeIn[0]}T${timeIn[1]}`)
-      const date2 = new Date(`${timeOut[0]}T${timeOut[1]}`)
+      const date1 = new Date(`${timeIn[0].split('/').reverse().join('-')}T${timeIn[1]}`)
+      const date2 = new Date(`${timeOut[0].split('/').reverse().join('-')}T${timeOut[1]}`)
       if (isNaN(date1.getTime()) || isNaN(date2.getTime())) { Alert.alert('Erro', 'Data ou horário não reconhecidos') }
       else if(date1.getTime() > date2.getTime()){Alert.alert('Erro', 'Data de retirada mais recente que data de devolução!')}
       else if(activity == ''){Alert.alert('Erro', 'Descreva a atividade!')}
@@ -84,7 +92,7 @@ export default function EntradaSaidaEquipDetalhe() {
         <Text style={localStyles.text}>Marca: {equipment?.marca}</Text>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <Text style={localStyles.text}>Status: </Text>
-          <Text style={[localStyles.text, { color: getStatusColor(equipment?.status) }]}>
+          <Text style={[localStyles.text, { color: getStatusColor(equipment?.status) }]}> 
             {equipment?.status.charAt(0).toUpperCase()}
             {equipment?.status.slice(1).toLowerCase()}
           </Text>
@@ -105,49 +113,20 @@ export default function EntradaSaidaEquipDetalhe() {
           <Text style={{ color: 'white' }}>Data de Retirada:</Text>
           <TextInputMask
             type={'datetime'}
-            options={{
-              format: 'YYYY-MM-DD',
-            }}
+            options={{ format: 'DD/MM/YYYY' }}
             value={timeIn[0]}
             onChangeText={(text) => handleDateInChange(0, text)}
-            placeholder="YYYY-MM-DD"
+            placeholder="DD/MM/YYYY"
             style={styles.searchInput}
             keyboardType="numeric"
           />
           <Text style={{ color: 'white' }}>Horário de Retirada:</Text>
           <TextInputMask
             type={'datetime'}
-            options={{
-              format: 'HH:MM:SS',
-            }}
+            options={{ format: 'HH:mm:ss' }}
             value={timeIn[1]}
             onChangeText={(text) => handleDateInChange(1, text)}
-            placeholder="HH:MM:SS"
-            style={styles.searchInput}
-            keyboardType="numeric"
-          />
-
-          <Text style={{ color: 'white' }}>Data de Devolução:</Text>
-          <TextInputMask
-            type={'datetime'}
-            options={{
-              format: 'YYYY-MM-DD',
-            }}
-            value={timeOut[0]}
-            onChangeText={(text) => handleDateOutChange(0, text)}
-            placeholder="YYYY-MM-DD"
-            style={styles.searchInput}
-            keyboardType="numeric"
-          />
-          <Text style={{ color: 'white' }}>Horário de Devolução:</Text>
-          <TextInputMask
-            type={'datetime'}
-            options={{
-              format: 'HH:MM:SS',
-            }}
-            value={timeOut[1]}
-            onChangeText={(text) => handleDateOutChange(1, text)}
-            placeholder="HH:MM:SS"
+            placeholder="HH:mm:ss"
             style={styles.searchInput}
             keyboardType="numeric"
           />
@@ -155,7 +134,7 @@ export default function EntradaSaidaEquipDetalhe() {
       </ScrollView>
 
       <View style={{ flex: 1, flexDirection: 'row' }}>
-        <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/entrada_saida_equip')}>
+        <Button mode="contained" style={[styles.searchButton]} onPress={() => router.push('/entrada_saida_equip')}>
           Voltar
         </Button>
         <Button mode="contained" style={[styles.searchButton, { marginLeft: 40 }]} onPress={handleCreate}>
@@ -171,31 +150,5 @@ const localStyles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     marginBottom: 5,
-  },
-})
-
-// Estilo personalizado para o Picker
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 18,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    color: 'black',
-    paddingRight: 30, // To ensure the text is never behind the icon
-    backgroundColor: '#fff',
-  },
-  inputAndroid: {
-    fontSize: 18,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    color: 'black',
-    paddingRight: 30, // To ensure the text is never behind the icon
-    backgroundColor: '#fff',
   },
 })
