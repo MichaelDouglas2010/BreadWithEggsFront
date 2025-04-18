@@ -19,7 +19,6 @@ export default function ConsultarEquip() {
   const [isScanning, setIsScanning] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Faz a busca por equipamentos via API
   const handleSearch = async () => {
     setIsLoading(true);
     try {
@@ -52,7 +51,6 @@ export default function ConsultarEquip() {
     }
   };
 
-  // Quando escaneado, coloca o QR lido no campo de busca
   const handleQRCodeScanned = (result: { data: string }) => {
     if (result.data) {
       setSearchQuery(result.data);
@@ -60,7 +58,6 @@ export default function ConsultarEquip() {
     }
   };
 
-  // Solicita permissão da câmera e ativa o scanner
   const handleQRCodeButtonPress = async () => {
     if (!permission?.granted) {
       const response = await requestPermission();
@@ -102,7 +99,16 @@ export default function ConsultarEquip() {
 
       {/* Leitor de QR Code (se permitido e ativado) */}
       {isScanning && permission?.granted && (
-        <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+        <View style={{ marginTop: 20 }}>
+          <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+          <Button
+            mode="contained"
+            style={[styles.searchButton, { marginTop: 10 }]}
+            onPress={() => setIsScanning(false)}
+          >
+            Fechar
+          </Button>
+        </View>
       )}
 
       {/* Mensagem de erro (se houver) */}

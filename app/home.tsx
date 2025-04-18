@@ -5,7 +5,7 @@ import styles from '../components/styles';
 import { Button } from 'react-native-paper';
 import { router } from 'expo-router';
 import ProfileImage from '../components/handle-images/profile-image';
-import ChatScreen from './chat_boot'; // Importe o componente de chat
+import ChatScreen from '../components/chatboot/chat_boot'; // Importe o componente de chat
 
 export default function Home() {
   const { user } = useAuth();

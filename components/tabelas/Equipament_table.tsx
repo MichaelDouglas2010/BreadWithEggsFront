@@ -35,13 +35,13 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
     if (item.status === 'ativo') {
       icon = '➡';
       color = '#1e90ff';
-      onPress = () => router.push({ pathname: '/saida', params: { equipId: item._id } });
+      onPress = () => router.push({ pathname: '/actions/saida_equip', params: { equipId: item._id } });
 
     // Equipamento emprestado: vai para tela de entrada
     } else if (item.status === 'emprestado') {
       icon = '⬅';
       color = '#32cd32';
-      onPress = () => router.push({ pathname: '/entrada', params: { equipId: item._id } });
+      onPress = () => router.push({ pathname: '/actions/entrada_equip', params: { equipId: item._id } });
 
     // Equipamento inativo: botão bloqueado
     } else if (item.status === 'inativo') {
