@@ -1,138 +1,179 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { EquipmentGet } from '../interfaces/equipment';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 
-//Tabela entrada_saida_equip
-
+// Props do componente: recebe um array de equipamentos
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
 }
 
 const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
-  const getStatusColor = (status: string) => {
+  const router = useRouter();
+
+  // Retorna um ícone baseado no status do equipamento
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'ativo':
-        return 'green';
-      case 'inativo':
-        return 'red';
+        return '🟢';
       case 'emprestado':
-        return 'yellow';
+        return '🟡';
+      case 'inativo':
+        return '🔴';
       default:
-        return 'gray';
+        return '⚪';
     }
   };
 
+  // Define o botão de ação baseado no status do equipamento
+  const renderActionButton = (item: EquipmentGet) => {
+    let icon = '';
+    let color = '';
+    let onPress = () => {};
+
+    // Equipamento disponível: vai para tela de saída
+    if (item.status === 'ativo') {
+      icon = '➡';
+      color = '#1e90ff';
+      onPress = () => router.push({ pathname: '/saida', params: { equipId: item._id } });
+
+    // Equipamento emprestado: vai para tela de entrada
+    } else if (item.status === 'emprestado') {
+      icon = '⬅';
+      color = '#32cd32';
+      onPress = () => router.push({ pathname: '/entrada', params: { equipId: item._id } });
+
+    // Equipamento inativo: botão bloqueado
+    } else if (item.status === 'inativo') {
+      icon = '🚫';
+      color = '#808080';
+      return (
+        <View style={[styles.actionButton, { backgroundColor: color }]}>
+          <Text style={styles.actionText}>{icon}</Text>
+        </View>
+      );
+    }
+
+    // Retorna botão de ação clicável
+    return (
+      <TouchableOpacity style={[styles.actionButton, { backgroundColor: color }]} onPress={onPress}>
+        <Text style={styles.actionText}>{icon}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  // Renderiza cada linha da lista de equipamentos
+  const renderItem = ({ item }: { item: EquipmentGet }) => (
+    <View style={styles.row}>
+      {/* Coluna Status */}
+      <View style={styles.cellStatus}>
+        <Text style={styles.statusIcon}>{getStatusIcon(item.status)}</Text>
+      </View>
+
+      {/* Coluna Equipamento */}
+      <View style={styles.cellInfo}>
+        <Text style={styles.equipName} numberOfLines={1}>{item.description}</Text>
+        <Text style={styles.equipBrand} numberOfLines={1}>{item.marca}</Text>
+      </View>
+
+      {/* Coluna Ação */}
+      <View style={styles.cellAction}>
+        {renderActionButton(item)}
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <ScrollView horizontal>
-        <FlatList
-          data={equipments}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => (
-            <Link
-              href={{
-                pathname: '/entrada_saida_equip_detalhe', 
-                params: { equipId: String(item._id) }
-              }}
-              style={styles.row}
-            >
-              <View style={styles.statusContainer}>
-                <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(item.status) }]} />
-              </View>
-              <View style={styles.descriptionCell}>
-                <Text style={styles.text}>{item.description}</Text>
-              </View>
-              <View style={styles.brandCell}>
-                <Text style={styles.text}>{item.marca}</Text>
-              </View>
-            </Link>
-          )}
-          ListHeaderComponent={
-            <View style={styles.row}>
-              <Text style={styles.headerCellStatus}>Status</Text>
-              <Text style={styles.headerCellDescription}>Descrição</Text>
-              <Text style={styles.headerCellBrand}>Marca</Text>
-            </View>
-          }
-          contentContainerStyle={styles.listContent}
-        />
-      </ScrollView>
+      {/* Cabeçalho da tabela */}
+      <View style={styles.headerRow}>
+        <Text style={[styles.headerText, styles.cellStatus]}>Status</Text>
+        <Text style={[styles.headerText, styles.cellInfo]}>Equipamento</Text>
+        <Text style={[styles.headerText, styles.cellAction]}>Ação</Text>
+      </View>
+
+      {/* Lista de equipamentos */}
+      <FlatList
+        data={equipments}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
+      />
     </View>
   );
 };
 
+// Estilos da interface
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 10,
+    backgroundColor: '#08475E',
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    paddingBottom: 8,
+    marginBottom: 6,
+  },
+  headerText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
+    backgroundColor: '#0B5D77',
+    borderRadius: 8,
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'white',
   },
-  headerCellStatus: {
-    width: 70,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 10,
-    backgroundColor: '#104861',
-    color: 'white',
-    borderRightWidth: 1,
-    borderRightColor: 'white',
-  },
-  headerCellDescription: {
-    width: 150,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 10,
-    backgroundColor: '#104861',
-    color: 'white',
-    borderRightWidth: 1,
-    borderRightColor: 'white',
-  },
-  headerCellBrand: {
-    width: 80,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 10,
-    backgroundColor: '#104861',
-    color: 'white',
-    borderRightWidth: 1,
-    borderRightColor: 'white',
-  },
-  statusContainer: {
-    width: 70,
+  // Coluna de status com largura fixa
+  cellStatus: {
+    width: 45,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
   },
-  descriptionCell: {
-    width: 150,
-    padding: 10,
-    borderRightWidth: 1,
-    borderRightColor: 'white',
+  // Coluna central com nome e marca (usa flex para ocupar o restante)
+  cellInfo: {
+    width: 200,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
-  brandCell: {
-    width: 80,
-    padding: 10,
-    borderRightWidth: 1,
-    borderRightColor: 'white',
+  // Coluna de ação com botão
+  cellAction: {
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  text: {
-    textAlign: 'center',
+  statusIcon: {
+    fontSize: 20,
+  },
+  equipName: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  equipBrand: {
+    fontSize: 12,
+    color: '#ccc',
+  },
+  // Botão da ação (entrada/saída/inativo)
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionText: {
+    fontSize: 20,
     color: 'white',
   },
-  statusIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
   listContent: {
-    paddingBottom: 0,
+    paddingBottom: 20,
   },
 });
 
