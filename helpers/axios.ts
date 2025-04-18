@@ -5,7 +5,7 @@ const uri = Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig?.host
 const api = axios.create({
     baseURL: "https://breadwitheggs.onrender.com",    timeout: 5000,// Tempo limite de 5 segundos
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json', 
     }
 })
 

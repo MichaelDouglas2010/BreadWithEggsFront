@@ -7,6 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "reactnative-paper",    
+    "assetBundlePatterns": [
+      "assets/*"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
