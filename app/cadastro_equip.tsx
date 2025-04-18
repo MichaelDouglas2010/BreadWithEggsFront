@@ -1,36 +1,46 @@
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../context/auth';
 import styles from '../components/styles';
 import { Button } from 'react-native-paper';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import api from '../helpers/axios';
+import React from 'react';
 
 export default function CadastrarEquip() {
   const { user } = useAuth();
-  const [description, setDescription] = useState(''); // Descrição do equipamento
-  const [marca, setMarca] = useState(''); // Marca do equipamento
+  const router = useRouter();
+  const [description, setDescription] = useState('');
+  const [marca, setMarca] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const generateQRCodeData = () => {
     return Math.random().toString(36).substr(2, 12);
   };
 
   const handleRegister = async () => {
+    if (!description.trim() || !marca.trim()) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await api.post('/equipment', {
         description,
         marca,
         status: 'ativo',
         dataEntrada: new Date(),
-        qrCodeData: generateQRCodeData()
+        qrCodeData: generateQRCodeData(),
       });
-      //console.log('Equipamento cadastrado com sucesso:', response.data);
-      Alert.alert('Sucesso', 'Equipamento cadastrado com sucesso!')
+      Alert.alert('Sucesso', 'Equipamento cadastrado com sucesso!');
       setDescription('');
       setMarca('');
     } catch (e) {
-      Alert.alert('Erro', 'Erro ao cadastrar equipamento!')
-      console.log("Erro ao cadastrar equipamento: " + e);
+      Alert.alert('Erro', 'Erro ao cadastrar equipamento!');
+      console.log('Erro ao cadastrar equipamento: ' + e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -40,45 +50,51 @@ export default function CadastrarEquip() {
         <Text style={styles.pageTitleLabel}>Cadastrar Equipamento</Text>
       </View>
 
-      {/* Formulário de Cadastro */}
       <ScrollView style={[styles.consEquipMenu]}>
         <View style={{ marginBottom: 10 }}>
-          <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
+          <Text style={styles.inputLabel}>Descrição</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Insira a descrição do equipamento"
+            placeholderTextColor="#CCCCCC"
             value={description}
             onChangeText={setDescription}
           />
         </View>
 
         <View style={{ marginBottom: 10 }}>
-          <Text style={{ fontSize: 16, color: 'white' }}>Marca</Text>
+          <Text style={styles.inputLabel}>Marca</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Insira a marca do equipamento"
+            placeholderTextColor="#CCCCCC"
             value={marca}
             onChangeText={setMarca}
           />
         </View>
 
-        {/* Centralizar Botões */}
         <View style={{ alignItems: 'center', marginTop: 20 }}>
-          <Button 
-            mode="contained" 
-            style={[styles.searchButton, { width: 150, height: 50 }]} 
-            onPress={handleRegister}
-          >
-            Cadastrar
-          </Button>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#FFFFFF" />
+          ) : (
+            <>
+              <Button
+                mode="contained"
+                style={[styles.searchButton, { width: 150, height: 50 }]}
+                onPress={handleRegister}
+              >
+                Cadastrar
+              </Button>
 
-          <Button 
-            mode="contained" 
-            style={[styles.searchButton, { width: 150, height: 50, marginTop: 10 }]} 
-            onPress={() => router.push('/selec_equip')}
-          >
-            Voltar
-          </Button>
+              <Button
+                mode="outlined"
+                style={[styles.cancelButton, { width: 150, height: 50, marginTop: 10 }]}
+                onPress={() => router.push('/selec_equip')}
+              >
+                Voltar
+              </Button>
+            </>
+          )}
         </View>
       </ScrollView>
     </View>
