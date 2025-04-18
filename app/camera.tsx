@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as FileSystem from 'expo-file-system'; // Para salvar no armazenamento
 import * as Permissions from 'expo-permissions'; // Para permissões de armazenamento
+import { Ionicons } from '@expo/vector-icons'; // Adicione esta importação
 
 interface CameraData {
   uri: string;
@@ -98,26 +99,19 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView
-        ref={cameraRef}
-        style={styles.camera}
-        facing={facing}
-        barcodeScannerSettings={{ barCodeTypes: ['qr'] }}
-        onBarcodeScanned={isScanning ? scanQRCode : undefined} // Ativa o scanner apenas quando necessário
-      >
+      <CameraView ref={cameraRef} style={styles.camera}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Inverter Câmera</Text>
+          <TouchableOpacity style={styles.iconButton} onPress={toggleCameraFacing}>
+            <Ionicons name="camera-reverse-outline" size={24} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={toggleScannerMode}>
-            <Text style={styles.text}>{isScanning ? 'Modo Foto' : 'Modo QR Code'}</Text>
+          <TouchableOpacity style={styles.iconButton} onPress={toggleScannerMode}>
+            <Ionicons name={isScanning ? "camera-outline" : "qr-code-outline"} size={24} color="white" />
           </TouchableOpacity>
           {!isScanning && (
-            <TouchableOpacity style={styles.button} onPress={takePicture} disabled={isLoading}>
-              <Text style={styles.text}>Capturar Foto</Text>
+            <TouchableOpacity style={styles.iconButton} onPress={takePicture} disabled={isLoading}>
+              <Ionicons name="camera" size={24} color="white" />
             </TouchableOpacity>
           )}
-          {isLoading && <Text>Capturando...</Text>}
         </View>
       </CameraView>
     </View>
@@ -127,30 +121,46 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
+    backgroundColor: 'black',
   },
   camera: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
   buttonContainer: {
     position: 'absolute',
     bottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    alignItems: 'center',
     width: '100%',
+    paddingHorizontal: 20,
   },
-  button: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 10,
-    borderRadius: 10,
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 12,
+    borderRadius: 50,
+    width: 60,
+    height: 60,
   },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  buttonText: {
+    fontSize: 12,
     color: 'white',
+    marginTop: 5,
+    textAlign: 'center',
   },
+  message: {
+    position: 'absolute',
+    top: 20,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 10,
+    borderRadius: 8,
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+    maxWidth: '80%',
+  }
 });
