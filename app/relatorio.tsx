@@ -10,7 +10,7 @@ import EquipmentTable from '../components/tabelas/Equipment_table_relatorio'
 
 export default function RelatorioEquip() {
 
-  const [searchQuery, setSearchQuery] = useState('') // Estado para controlar a pesquisa
+  const [searchQuery, setSearchQuery] = useState('') 
 
   const [filter, setFilter] = useState<EquipmentGet[]>([])
 

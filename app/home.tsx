@@ -15,9 +15,9 @@ export default function Home() {
     <View style={styles.container}>
       <View style={styles.profileBox}>
         <ProfileImage />
-        <View>
-          <Text style={styles.profileLabel}>{user.name}</Text>
-          <Text style={styles.profileLabel}>{user.team}</Text>
+        <View style={styles.profileDetails}>
+          <Text style={styles.profileName}>{user.name}</Text>
+          <Text style={styles.profileTeam}>{user.team}</Text>
         </View>
       </View>
       <ScrollView style={styles.homeMenu}>
@@ -78,25 +78,38 @@ const floatingStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#007B83', // Ciano mais escuro para contraste
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
+    borderWidth: 2,
+    borderColor: '#005F63', // Azul escuro para borda
   },
   chatButtonText: {
-    color: '#fff',
+    color: '#F1FAEE', // Branco pastel para contraste
     fontSize: 24,
+    fontWeight: 'bold', // Negrito para maior visibilidade
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#E8F0F2', // Fundo cinza claro pastel
     padding: 10,
     justifyContent: 'flex-end',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 1,
+    borderColor: '#A8DADC', // Ciano pastel para borda
   },
   closeButton: {
     marginTop: 10,
+    backgroundColor: '#007B83', // Ciano mais escuro para contraste
+    borderWidth: 2,
+    borderColor: '#005F63', // Azul escuro para borda
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
 });

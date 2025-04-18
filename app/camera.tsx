@@ -82,7 +82,6 @@ export default function CameraScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
-  // Alterna entre modo normal e scanner de QR Code
   function toggleScannerMode() {
     setIsScanning(!isScanning);
   }

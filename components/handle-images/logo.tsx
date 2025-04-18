@@ -5,7 +5,7 @@ export default function Logo(){
     return (
         <Image 
         style={styles.loginLogo}
-        source={require('../../assets/logo.png')}
+        source={require('../../assets/Cantier.png')}
         />
     )
 }
