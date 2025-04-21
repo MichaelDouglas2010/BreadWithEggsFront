@@ -18,7 +18,7 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FF6F00',
   },
   webview: {
     flex: 1,

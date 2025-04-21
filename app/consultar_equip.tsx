@@ -78,21 +78,26 @@ export default function ConsultarEquip() {
 
       {/* Campo de busca e botão de QR Code */}
       <View>
-        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
+        <Text style={styles.inputLabel}>Descrição</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
             style={[styles.searchInput, { flex: 1 }]}
-            placeholder="Insira a descrição ou ID do equip"
+            placeholder="Digite a descrição ou ID do equipamento"
             value={searchQuery}
             onChangeText={setSearchQuery}
             accessibilityLabel="Campo de busca de equipamento"
           />
-          <TouchableOpacity onPress={handleQRCodeButtonPress}>
-            <Ionicons name="qr-code-outline" size={30} color="white" style={{ marginLeft: 10 }} />
+          <TouchableOpacity onPress={handleQRCodeButtonPress} accessibilityLabel="Botão para escanear QR Code">
+            <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
 
-        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
+        <Button
+          mode="contained"
+          style={[styles.searchButton, { backgroundColor: '#FF6F00' }]}
+          onPress={handleSearch}
+          accessibilityLabel="Botão para buscar equipamentos"
+        >
           Buscar
         </Button>
       </View>
@@ -113,17 +118,23 @@ export default function ConsultarEquip() {
 
       {/* Mensagem de erro (se houver) */}
       {errorMessage ? (
-        <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{errorMessage}</Text>
+        <Text style={styles.errorText} accessibilityLabel="Mensagem de erro">
+          {errorMessage}
+        </Text>
       ) : null}
 
       {/* Lista de equipamentos em tabela */}
       <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
-        <View style={{ marginBottom: 5 }} />
         <EquipmentTable2 equipments={filter} />
       </ScrollView>
 
       {/* Botão de voltar */}
-      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
+      <Button
+        mode="contained"
+        style={styles.searchButton}
+        onPress={() => router.push('/home')}
+        accessibilityLabel="Botão para voltar à página inicial"
+      >
         Voltar
       </Button>
     </View>

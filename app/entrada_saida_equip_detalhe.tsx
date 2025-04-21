@@ -8,10 +8,10 @@ import EquipmentTable from '../components/tabelas/Equipament_table';
 import { router } from 'expo-router';
 
 export default function EntradaSaidaEquip() {
-  const [searchQuery, setSearchQuery] = useState(''); // Estado para controlar a pesquisa
-  const [filter, setFilter] = useState<EquipmentGet[]>([]); // Equipamentos filtrados
-  const [errorMessage, setErrorMessage] = useState(''); // Mensagem de erro
-  const [isLoading, setIsLoading] = useState(false); // Estado de carregamento
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [filter, setFilter] = useState<EquipmentGet[]>([]); 
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
     setIsLoading(true);

@@ -14,10 +14,10 @@ import QRCodeScanner from '../components/sensor/QRCodeScanner';
 export default function EntradaSaidaEquip() {
   const [searchQuery, setSearchQuery] = useState(''); // Estado para controlar a pesquisa
   const [filter, setFilter] = useState<EquipmentGet[]>([]); // Equipamentos filtrados
-  const [errorMessage, setErrorMessage] = useState(''); // Mensagem de erro
-  const [isLoading, setIsLoading] = useState(false); // Estado de carregamento
-  const [isScanning, setIsScanning] = useState(false); // Estado do scanner de QR Code
-  const [permission, requestPermission] = useCameraPermissions(); // Permissões da câmera
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [isScanning, setIsScanning] = useState(false); 
+  const [permission, requestPermission] = useCameraPermissions(); 
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -75,7 +75,7 @@ export default function EntradaSaidaEquip() {
             accessibilityLabel="Campo de busca de equipamento"
           />
           <TouchableOpacity onPress={() => setIsScanning(true)}>
-            <Ionicons name="qr-code-outline" size={30} color="white" style={{ marginLeft: 10 }} />
+            <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
 
