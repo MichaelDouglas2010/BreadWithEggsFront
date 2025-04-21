@@ -5,12 +5,11 @@ import styles from '../components/styles';
 import { Button } from 'react-native-paper';
 import { router } from 'expo-router';
 import ProfileImage from '../components/handle-images/profile-image';
-import ChatScreen from '../components/chatboot/chat_boot'; // Importe o componente de chat
+import ChatScreen from '../components/chatboot/chat_boot'; 
 
 export default function Home() {
   const { user } = useAuth();
-  const [isChatVisible, setChatVisible] = useState(false); // Estado para controlar a visibilidade do chat
-
+  const [isChatVisible, setChatVisible] = useState(false);
   return (
     <View style={styles.container}>
       <View style={styles.profileBox}>

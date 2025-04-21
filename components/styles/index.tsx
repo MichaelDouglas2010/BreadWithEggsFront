@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 4,
   },
-  homeButton: {
+      homeButton: {
     marginTop: 5,
     marginBottom: 5,
     borderRadius: 10,
