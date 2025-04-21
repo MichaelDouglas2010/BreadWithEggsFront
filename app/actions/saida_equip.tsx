@@ -7,7 +7,6 @@ export default function SaidaEquip() {
   const { equipId } = useLocalSearchParams();
 
   const handleConfirm = () => {
-    // Lógica para confirmar a saída do equipamento
     console.log(`Saída confirmada para o equipamento ${equipId}`);
     router.push('/consultar_equip');
   };

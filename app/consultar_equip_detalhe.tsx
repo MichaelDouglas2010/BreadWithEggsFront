@@ -41,7 +41,7 @@ export default function ConsultarEquipDetalhe() {
             .then((response) => {
                 setEquipment(response.data)
             })
-    }, [])
+    }, [equipId])
 
     return (
         <View style={styles.container}>
@@ -65,7 +65,7 @@ export default function ConsultarEquipDetalhe() {
 const localStyles = StyleSheet.create({
     text: {
         fontSize: 20,
-        color: 'white',
+        color: 'black',
         marginBottom: 5,
     }
 })

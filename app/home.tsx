@@ -22,22 +22,22 @@ export default function Home() {
       <ScrollView style={styles.homeMenu}>
         <View style={{ marginBottom: 15 }} />
 
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/consultar_equip')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/consultar_equip')}>
           Consultar Equipamento
         </Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/entrada_saida_equip')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/registrar_uso_equip')}>
           Registrar Uso de Equipamento
         </Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/selec_equip')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/gerenciar_equip')}>
           Gerenciar Equipamentos
         </Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/relatorio')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/relatorio')}>
           Relatórios
         </Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/camera')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/camera')}>
           Camera
         </Button>
-        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/about')}>
+        <Button mode="contained" style={styles.homeButton} onPress={() => router.push('/home_pages/about')}>
           Sobre
         </Button>
       </ScrollView>

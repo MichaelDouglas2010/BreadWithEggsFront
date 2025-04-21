@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { View, Text, TextInput, ScrollView } from 'react-native'
-import styles from '../components/styles'
+import styles from '../../components/styles'
 import { Button } from 'react-native-paper'
-import api from '../helpers/axios'
-import { EquipmentGet } from '../components/interfaces/equipment'
+import api from '../../helpers/axios'
+import { EquipmentGet } from '../../components/interfaces/equipment'
 import axios from 'axios'
 import { router } from 'expo-router'
-import EquipmentTable from '../components/tabelas/Equipment_table_relatorio'
+import EquipmentTable from '../../components/tabelas/Equipment_table_relatorio'
 
 export default function RelatorioEquip() {
 
@@ -53,8 +53,6 @@ export default function RelatorioEquip() {
       <View style={styles.pageTitleBox}>
         <Text style={styles.pageTitleLabel}>Consultar Relatório</Text>
       </View>
-
-
       {/* Barra de Pesquisa */}
       <View >
         <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
@@ -65,7 +63,6 @@ export default function RelatorioEquip() {
           onChangeText={setSearchQuery}
           accessibilityLabel="Campo de busca de equipamento"
         />
-
         {/* Botão Buscar */}
         <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
           Buscar

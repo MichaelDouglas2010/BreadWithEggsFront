@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { router } from 'expo-router';
 
 // Define the type for your stack's navigation parameters
 type RootStackParamList = {
@@ -31,7 +32,7 @@ const EquipmentDetailScreen = () => {
       {/* Button to navigate to another screen */}
       <Button
         title="Go to Another Screen"
-        onPress={() => navigation.navigate('AnotherScreen')}
+        onPress={() => router.push('../components/tabelas/EquipamentDetail')}
       />
     </View>
   );
