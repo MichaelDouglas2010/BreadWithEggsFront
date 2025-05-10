@@ -9,5 +9,7 @@ export default function Layout() {
           <Slot />
         </AuthProvider>
       </PaperProvider>
+
+      
   )
 }

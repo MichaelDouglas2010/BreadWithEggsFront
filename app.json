@@ -1,5 +1,8 @@
 {
   "expo": {
+    "extra": {
+      "newArchEnabled": true
+    },
     "name": "reactnative-paper",
     "slug": "reactnative-paper",
     "version": "1.0.0",

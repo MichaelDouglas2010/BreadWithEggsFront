@@ -1,11 +1,13 @@
 import axios from "axios";
 import Constants from "expo-constants";
 
-const uri = Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig?.hostUri?.split(':').shift()}:3000` : "";
+const uri = Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig?.hostUri?.split(':').shift()}:3000` : "";//
+//const uri = "http:192.168.18.5:3000";// Substitua pelo seu URI real 
 const api = axios.create({
-    baseURL: "https://breadwithegg.onrender.com",    timeout: 5000,// Tempo limite de 5 segundos
+    baseURL: uri,
+    timeout: 5000, // Tempo limite de 5 segundos
     headers: {
-        'Content-Type': 'application/json', 
+        'Content-Type': 'application/json',
     }
 })
 

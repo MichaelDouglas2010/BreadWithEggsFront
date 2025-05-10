@@ -48,7 +48,7 @@ const EquipmentTableRelatorio: React.FC<EquipmentTableProps> = ({ equipments }) 
 
   const handleRowPress = (item: EquipmentGet) => {
     console.log(`Navigating to report details of equipment ID: ${item._id}`);
-    router.push(`../../app/registro_equip_detail/${item._id}`);
+    router.push(`/relatorio_detalhe/${item._id}`);
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

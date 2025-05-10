@@ -32,11 +32,27 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
     if (item.status === 'ativo') {
       icon = '➡';
       color = '#FF6F00';
-      onPress = () => router.push({ pathname: '/actions/saida_equip', params: { equipId: item._id.toString() } });
+      onPress = () => 
+        router.push({
+          pathname: '/actions/saida_equip',
+          params: {
+            equipId: item._id.toString(),
+            description: item.description,
+            marca: item.marca,
+          }
+        });
     } else if (item.status === 'emprestado') {
       icon = '⬅';
       color = '#32cd32';
-      onPress = () => router.push({ pathname: '/actions/entrada_equip', params: { equipId: item._id.toString() } });
+      onPress = () => 
+        router.push({
+          pathname: '/actions/entrada_equip',
+          params: { 
+            equipId: item._id.toString(), 
+          description: item.description,
+          marca: item.marca,
+        }
+        });
     } else if (item.status === 'inativo') {
       icon = '🚫';
       color = '#808080';
