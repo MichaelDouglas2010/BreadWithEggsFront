@@ -45,48 +45,110 @@ export default function ExcluirEquipDetalhe() {
     }, [])
 
     const handleDelete = async () => {
-        try {
-          await api.delete(`/equipment/${equipId}`)
-          Alert.alert('Sucesso', 'Equipamento excluído com sucesso!')
-          router.push('/home_pages/gerenciar_equip')
-        } catch (e) {
-          console.log("Erro ao excluir equipamento: " + e)
-          Alert.alert('Erro', 'Não foi possível excluir o equipamento.')
-          router.push('/home_pages/gerenciar_equip')
-        }
+        Alert.alert(
+          'Confirmar Exclusão',
+          'Tem certeza que deseja excluir este equipamento?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+              text: 'Excluir',
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  await api.delete(`/equipment/${equipId}`)
+                  Alert.alert('Sucesso', 'Equipamento excluído com sucesso!')
+                  router.push('/home_pages/gerenciar_equip')
+                } catch (e) {
+                  console.log("Erro ao excluir equipamento: " + e)
+                  Alert.alert('Erro', 'Não foi possível excluir o equipamento.')
+                  router.push('/home_pages/gerenciar_equip')
+                }
+              }
+            }
+          ]
+        );
       }
 
     return (
-        <View style={styles.container}>
-            <View style={[styles.pageTitleBox, { backgroundColor: '#75181D' }]}>
-                <Text style={styles.pageTitleLabel}>{equipment?.description}</Text>
-            </View>
-            <ScrollView style={[styles.consEquipMenu]}>
-                <Text style={[localStyles.text, { marginTop: 20 }]}>Descrição: {equipment?.description}</Text>
-                <Text style={localStyles.text}>Marca: {equipment?.marca}</Text>
-                <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text style={localStyles.text}>Status: </Text>
-                    <Text style={[localStyles.text, { color: getStatusColor(equipment?.status) }]}>{equipment?.status.charAt(0).toUpperCase()}{equipment?.status.slice(1).toLowerCase()}</Text>
+        <View style={localStyles.container}>
+            <View style={localStyles.card}>
+                <Text style={localStyles.title}>{equipment?.description}</Text>
+                <Text style={localStyles.label}>Descrição:</Text>
+                <Text style={localStyles.value}>{equipment?.description}</Text>
+                <Text style={localStyles.label}>Marca:</Text>
+                <Text style={localStyles.value}>{equipment?.marca}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                    <Text style={localStyles.label}>Status: </Text>
+                    <Text style={[localStyles.value, { color: getStatusColor(equipment?.status), fontWeight: 'bold' }]}>
+                      {equipment?.status.charAt(0).toUpperCase()}{equipment?.status.slice(1).toLowerCase()}
+                    </Text>
                 </View>
-                <Text style={localStyles.text}>Data de Registro: {equipment ? formatDate(equipment?.dataEntrada) : ''}</Text>
-                <Text style={localStyles.text}>QrCode: {equipment?.qrCodeData}</Text>
-            </ScrollView>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/home_pages/gerenciar_equip')}>
-                Cancelar
-            </Button>
-            <Button mode="contained" style={[styles.searchButton, { marginLeft: 40, backgroundColor: '#75181D' }]} onPress={()=>handleDelete()}>
-                Excluir
-            </Button>
+                <Text style={localStyles.label}>Data de Registro:</Text>
+                <Text style={localStyles.value}>{equipment ? formatDate(equipment?.dataEntrada) : ''}</Text>
+                <Text style={localStyles.label}>QrCode:</Text>
+                <Text style={localStyles.value}>{equipment?.qrCodeData}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
+                <Button
+                    mode="contained"
+                    style={[localStyles.button, { backgroundColor: '#ccc' }]}
+                    labelStyle={{ color: '#222' }}
+                    onPress={() => router.push('/home_pages/gerenciar_equip')}
+                >
+                    Cancelar
+                </Button>
+                <Button
+                    mode="contained"
+                    style={[localStyles.button, { backgroundColor: '#007B83' }]}
+                    labelStyle={{ color: '#fff' }}
+                    onPress={handleDelete}
+                >
+                    Excluir
+                </Button>
             </View>
         </View>
     )
 }
 
 const localStyles = StyleSheet.create({
-    text: {
-        fontSize: 20,
-        color: 'white',
+    container: {
+        flex: 1,
+        backgroundColor: '#f7f7f7',
+        padding: 20,
+        justifyContent: 'center',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+        marginBottom: 30,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#222',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    label: {
+        fontSize: 16,
+        color: '#444',
+        marginTop: 10,
+        fontWeight: '600',
+    },
+    value: {
+        fontSize: 18,
+        color: '#111',
         marginBottom: 5,
-    }
+    },
+    button: {
+        flex: 1,
+        marginHorizontal: 5,
+        borderRadius: 8,
+        paddingVertical: 8,
+    },
 })

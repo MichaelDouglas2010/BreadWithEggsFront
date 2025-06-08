@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
-import { EquipmentGet } from '../interfaces/equipment'; // Importa a interface EquipmentGet
+import { EquipmentGet } from '../interfaces/equipment'; 
 
 const EquipmentDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();

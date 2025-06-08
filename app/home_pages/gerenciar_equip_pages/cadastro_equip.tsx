@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../../context/auth';
 import styles from '../../../components/styles';
 import { Button } from 'react-native-paper';
@@ -26,7 +26,7 @@ export default function CadastrarEquip() {
 
     setIsLoading(true);
     try {
-      const response = await api.post('/equipment', {
+      await api.post('/equipment', {
         description,
         marca,
         status: 'ativo',
@@ -45,53 +45,100 @@ export default function CadastrarEquip() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Cadastrar Equipamento</Text>
+    <ScrollView contentContainerStyle={localStyles.container}>
+      <View style={localStyles.card}>
+        <Text style={localStyles.title}>Cadastrar Equipamento</Text>
+        <Text style={localStyles.label}>Tipo de Equipamento</Text>
+        <TextInput
+          style={localStyles.input}
+          placeholder="Insira a descrição do equipamento"
+          placeholderTextColor="#CCCCCC"
+          value={description}
+          onChangeText={setDescription}
+        />
+        <Text style={localStyles.label}>Marca</Text>
+        <TextInput
+          style={localStyles.input}
+          placeholder="Insira a marca do equipamento"
+          placeholderTextColor="#CCCCCC"
+          value={marca}
+          onChangeText={setMarca}
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
+          <Button
+            mode="contained"
+            style={[localStyles.button, { backgroundColor: '#ccc' }]}
+            labelStyle={{ color: '#222' }}
+            onPress={() => router.push('/home_pages/gerenciar_equip')}
+            disabled={isLoading}
+          >
+            Voltar
+          </Button>
+          <Button
+            mode="contained"
+            style={[localStyles.button, { backgroundColor: '#007B83' }]}
+            labelStyle={{ color: '#fff' }}
+            onPress={handleRegister}
+            loading={isLoading}
+            disabled={isLoading}
+          >
+            Cadastrar
+          </Button>
+        </View>
+        {isLoading && (
+          <ActivityIndicator size="large" color="#007B83" style={{ marginTop: 20 }} />
+        )}
       </View>
-
-      <ScrollView style={[styles.consEquipMenu]}>
-        <View style={{ marginBottom: 10 }}>
-          <Text style={styles.inputLabel}>Descrição</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Insira a descrição do equipamento"
-            placeholderTextColor="#CCCCCC"
-            value={description}
-            onChangeText={setDescription}
-          />
-        </View>
-
-        <View style={{ marginBottom: 10 }}>
-          <Text style={styles.inputLabel}>Marca</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Insira a marca do equipamento"
-            placeholderTextColor="#CCCCCC"
-            value={marca}
-            onChangeText={setMarca}
-          />
-        </View>
-
-        <View style={{ alignItems: 'center', marginTop: 20 }}>
-          {isLoading ? (
-            <ActivityIndicator size="large" color="#FFFFFF" />
-          ) : (
-            <>
-              <Button
-                mode="contained"
-                style={[styles.searchButton, { width: 150, height: 50 }]}
-                onPress={handleRegister}
-              >
-                Cadastrar
-              </Button>
-              <Button mode="contained" style={[styles.searchButton, { width: 150, height: 50 }]} onPress={() => router.push('/home_pages/gerenciar_equip')}> 
-                Voltar
-              </Button>
-            </>
-          )}
-        </View>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
+
+const localStyles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#f7f7f7',
+    padding: 20,
+    justifyContent: 'center',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#222',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    color: '#444',
+    marginTop: 10,
+    fontWeight: '600',
+  },
+  input: {
+    fontSize: 18,
+    color: '#111',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 6,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    paddingVertical: 8,
+  },
+});
