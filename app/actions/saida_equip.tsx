@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import api from '../../helpers/axios';
+import { Button } from 'react-native-paper';
 
 export default function SaidaEquip() {
   const router = useRouter();
-  const { equipId, description, marca, signature, retiradoPor: returnedRetiradoPor, localUso: returnedLocalUso, observacoes: returnedObservacoes } = useLocalSearchParams(); // Recebe os dados enviados
+  const {
+    equipId,
+    description,
+    marca,
+    signature,
+    retiradoPor: returnedRetiradoPor,
+    localUso: returnedLocalUso,
+    observacoes: returnedObservacoes,
+  } = useLocalSearchParams();
 
-  const [retiradoPor, setRetiradoPor] = useState(returnedRetiradoPor || '');
-  const [localUso, setLocalUso] = useState(returnedLocalUso || '');
-  const [observacoes, setObservacoes] = useState(returnedObservacoes || '');
-  const [assinatura, setAssinatura] = useState(signature || ''); // Recebe a assinatura retornada
+  const [retiradoPor, setRetiradoPor] = useState(
+    Array.isArray(returnedRetiradoPor) ? returnedRetiradoPor[0] ?? '' : returnedRetiradoPor ?? ''
+  );
+  const [localUso, setLocalUso] = useState(
+    Array.isArray(returnedLocalUso) ? returnedLocalUso[0] ?? '' : returnedLocalUso ?? ''
+  );
+  const [observacoes, setObservacoes] = useState(
+    Array.isArray(returnedObservacoes) ? returnedObservacoes[0] ?? '' : returnedObservacoes ?? ''
+  );
+  const [assinatura, setAssinatura] = useState(signature || '');
   const [dataHoraRetirada] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
@@ -46,57 +61,57 @@ export default function SaidaEquip() {
 
   const handleOpenSignature = () => {
     router.push({
-      pathname: '/tela_assinatura/SignatureScreen', // Caminho para a tela de assinatura
+      pathname: '/tela_assinatura/SignatureScreen',
       params: {
         returnTo: '/actions/saida_equip',
         retiradoPor,
         localUso,
         observacoes,
-        signature: assinatura, // Passa a assinatura atual
-      }, // Passa os dados existentes
+        signature: assinatura,
+      },
     });
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Saída de Equipamento</Text>
+    <ScrollView contentContainerStyle={localStyles.container}>
+      <View style={localStyles.card}>
+        <Text style={localStyles.title}>Saída de Equipamento</Text>
 
-        <Text style={styles.label}>ID do Equipamento:</Text>
-        <Text style={styles.value}>{equipId}</Text>
+        <Text style={localStyles.label}>ID do Equipamento:</Text>
+        <Text style={localStyles.value}>{equipId}</Text>
 
-        <Text style={styles.label}>Descrição:</Text>
-        <Text style={styles.value}>{description}</Text>
+        <Text style={localStyles.label}>Tipo do equipamento:</Text>
+        <Text style={[localStyles.value, { color: '#000' }]}>{description}</Text>
 
-        <Text style={styles.label}>Marca:</Text>
-        <Text style={styles.value}>{marca}</Text>
+        <Text style={localStyles.label}>Marca:</Text>
+        <Text style={localStyles.value}>{marca}</Text>
 
-        <Text style={styles.label}>Nome de quem está retirando:</Text>
+        <Text style={localStyles.label}>Nome de quem está retirando:</Text>
         <TextInput
-          style={styles.input}
+          style={localStyles.input}
           value={retiradoPor}
           onChangeText={setRetiradoPor}
           placeholder="Digite o nome"
           placeholderTextColor="#ccc"
         />
 
-        <Text style={styles.label}>Local de Uso:</Text>
+        <Text style={localStyles.label}>Local de Uso:</Text>
         <TextInput
-          style={styles.input}
+          style={localStyles.input}
           value={localUso}
           onChangeText={setLocalUso}
           placeholder="Digite o local de uso"
           placeholderTextColor="#ccc"
         />
 
-        <Text style={styles.label}>Data e Hora de Retirada:</Text>
-        <Text style={styles.value}>
+        <Text style={localStyles.label}>Data e Hora de Retirada:</Text>
+        <Text style={localStyles.value}>
           {dataHoraRetirada.toLocaleString()}
         </Text>
 
-        <Text style={styles.label}>Observações:</Text>
+        <Text style={localStyles.label}>Observações:</Text>
         <TextInput
-          style={[styles.input, { height: 80 }]}
+          style={[localStyles.input, { height: 80 }]}
           value={observacoes}
           onChangeText={setObservacoes}
           placeholder="Adicione observações (opcional)"
@@ -104,52 +119,102 @@ export default function SaidaEquip() {
           multiline
         />
 
-        <Text style={styles.label}>Assinatura:</Text>
+        <Text style={localStyles.label}>Assinatura:</Text>
         {assinatura ? (
           <Image
-            source={{ uri: assinatura }}
-            style={styles.signatureImage}
+            source={{ uri: Array.isArray(assinatura) ? assinatura[0] ?? '' : assinatura }}
+            style={localStyles.signatureImage}
           />
         ) : (
-          <Button title="Abrir Assinatura" onPress={handleOpenSignature} />
+          <Button
+            mode="outlined"
+            style={localStyles.button}
+            onPress={handleOpenSignature}
+          >
+            Abrir Assinatura
+          </Button>
         )}
 
-        <Button title={loading ? "Enviando..." : "Confirmar Saída"} onPress={handleConfirm} disabled={loading} />
-        <Button title="Cancelar" onPress={() => router.back()} color="#999" />
+        {loading && <ActivityIndicator size="large" color="#007B83" style={{ marginVertical: 10 }} />}
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
+          <Button
+            mode="contained"
+            style={[localStyles.button, { backgroundColor: '#ccc' }]}
+            labelStyle={{ color: '#222' }}
+            onPress={() => router.back()}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            mode="contained"
+            style={[localStyles.button, { backgroundColor: '#007B83' }]}
+            labelStyle={{ color: '#fff' }}
+            onPress={handleConfirm}
+            disabled={loading}
+            loading={loading}
+          >
+            Confirmar Saída
+          </Button>
+        </View>
       </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-  },
+const localStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#08475E',
+    flexGrow: 1,
+    backgroundColor: '#f7f7f7',
     padding: 20,
+    justifyContent: 'center',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
+    color: '#222',
+    marginBottom: 15,
+    textAlign: 'center',
   },
   label: {
-    color: 'white',
-    fontWeight: '600',
+    fontSize: 16,
+    color: '#444',
     marginTop: 10,
+    fontWeight: '600',
   },
   value: {
-    color: 'white',
-    marginBottom: 10,
+    fontSize: 18,
+    color: '#111',
+    marginBottom: 5,
   },
   input: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
+    fontSize: 18,
+    color: '#111',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 6,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    paddingVertical: 8,
   },
   signatureImage: {
     width: '100%',
@@ -157,5 +222,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     marginBottom: 10,
+    borderRadius: 8,
   },
 });

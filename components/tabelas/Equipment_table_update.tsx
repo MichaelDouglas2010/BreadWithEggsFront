@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import GenericTable from './GenericTable';
 import { EquipmentGet } from '../interfaces/equipment';
+import { router } from 'expo-router';
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
@@ -45,7 +46,7 @@ const EquipmentTableUpdate: React.FC<EquipmentTableProps> = ({ equipments }) => 
   ];
 
   const handleRowPress = (item: EquipmentGet) => {
-    console.log(`Navigating to update details of equipment ID: ${item._id}`);
+    router.push(`/alterar_equip_detalhe?id=${item._id}`)
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

@@ -59,7 +59,7 @@ export default function ExcluirEquip() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.pageTitleBox, { backgroundColor: '#75181D' }]}>
+      <View style={[styles.pageTitleBox]}>
         <Text style={styles.pageTitleLabel}>Excluir Equipamento</Text>
       </View>
 
