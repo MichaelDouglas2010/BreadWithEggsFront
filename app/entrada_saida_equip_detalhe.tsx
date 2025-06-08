@@ -5,9 +5,12 @@ import { Button } from 'react-native-paper';
 import api from '../helpers/axios';
 import { EquipmentGet } from '../components/interfaces/equipment';
 import EquipmentTable from '../components/tabelas/Equipament_registro';
-import { router } from 'expo-router';
+import { router } from 'expo-router'
+import { useEffect } from 'react';
+
 
 export default function EntradaSaidaEquip() {
+
   const [searchQuery, setSearchQuery] = useState(''); 
   const [filter, setFilter] = useState<EquipmentGet[]>([]); 
   const [errorMessage, setErrorMessage] = useState(''); 
@@ -59,7 +62,7 @@ export default function EntradaSaidaEquip() {
           mode="contained"
           style={styles.searchButton}
           onPress={handleSearch}
-          disabled={!searchQuery.trim() && !isLoading}
+          disabled={isLoading}
         >
           {isLoading ? 'Buscando...' : 'Buscar'}
         </Button>

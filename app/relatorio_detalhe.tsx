@@ -97,7 +97,7 @@ export default function RelatorioDetalhe() {
           >
             <Text style={localStyles.usageLabel}>Atividade: <Text style={localStyles.usageValue}>{us.activity}</Text></Text>
             <Text style={localStyles.usageLabel}>Usuário: <Text style={localStyles.usageValue}>{users[index] || 'Não definido'}</Text></Text>
-            <Text style={localStyles.usageLabel}>Horário de Início: <Text style={localStyles.usageValue}>{formatDate(us.startTime)}</Text></Text>
+            <Text style={localStyles.usageLabel}>Horário de Início: <Text style={localStyles.usageValue}>{formatDate(us.startTime) }</Text></Text>
             <Text style={localStyles.usageLabel}>Horário de Devolução: <Text style={localStyles.usageValue}>{formatDate(us.endTime)}</Text></Text>
             <Text style={localStyles.usageLabel}>Tempo: <Text style={localStyles.usageValue}>{us.totalHours.toFixed(2)}h</Text></Text>
           </View>
