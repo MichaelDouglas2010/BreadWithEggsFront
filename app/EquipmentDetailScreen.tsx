@@ -21,7 +21,6 @@ const EquipmentDetailScreen = () => {
   const navigation = useNavigation<EquipmentDetailScreenNavigationProp>();
   const route = useRoute<EquipmentDetailScreenRouteProp>();
 
-  // Access the route parameters (e.g., equipmentId)
   const { equipmentId } = route.params;
 
   return (

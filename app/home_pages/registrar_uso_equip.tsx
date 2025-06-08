@@ -89,8 +89,8 @@ export default function EntradaSaidaEquip() {
         <View style={{ marginTop: 20 }}>
           <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
           <Button
-            mode="contained" // Consistência com os outros botões
-            style={[styles.searchButton, { marginTop: 10 }]} // Aplicado o estilo existente
+            mode="contained" 
+            style={[styles.searchButton, { marginTop: 10 }]} 
             onPress={() => setIsScanning(false)}
           >
             Fechar
