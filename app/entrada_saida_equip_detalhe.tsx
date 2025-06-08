@@ -4,7 +4,7 @@ import styles from '../components/styles';
 import { Button } from 'react-native-paper';
 import api from '../helpers/axios';
 import { EquipmentGet } from '../components/interfaces/equipment';
-import EquipmentTable from '../components/tabelas/Equipament_table';
+import EquipmentTable from '../components/tabelas/Equipament_registro';
 import { router } from 'expo-router';
 
 export default function EntradaSaidaEquip() {

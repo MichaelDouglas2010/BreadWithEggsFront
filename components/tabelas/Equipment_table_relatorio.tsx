@@ -2,12 +2,14 @@ import React from 'react';
 import { Text } from 'react-native';
 import GenericTable from './GenericTable';
 import { EquipmentGet } from '../interfaces/equipment';
+import { useRouter } from 'expo-router';
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
 }
 
 const EquipmentTableRelatorio: React.FC<EquipmentTableProps> = ({ equipments }) => {
+  const router = useRouter();
   const columns = [
     {
       key: 'status',
@@ -46,8 +48,8 @@ const EquipmentTableRelatorio: React.FC<EquipmentTableProps> = ({ equipments }) 
 
   const handleRowPress = (item: EquipmentGet) => {
     console.log(`Navigating to report details of equipment ID: ${item._id}`);
+    router.push(`/relatorio_detalhe?equipId=${item._id}`);
   };
-
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;
 };
 

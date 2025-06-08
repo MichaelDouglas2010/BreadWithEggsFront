@@ -1,23 +1,23 @@
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-paper';
-import { useCameraPermissions } from 'expo-camera';
-import { Ionicons } from '@expo/vector-icons';
-import styles from '../components/styles';
-import api from '../helpers/axios';
-import { EquipmentGet } from '../components/interfaces/equipment';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { useAuth } from '../../../context/auth';
+import styles from '../../../components/styles';
+import api from '../../../helpers/axios';
+import { EquipmentGet } from '../../../components/interfaces/equipment';
 import axios from 'axios';
-import EquipmentTable from '../components/tabelas/Equipament_table';
+import EquipmentTable from '../../../components/tabelas/Equipament_consultar';
 import { router } from 'expo-router';
-import QRCodeScanner from '../components/sensor/QRCodeScanner';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function EntradaSaidaEquip() {
-  const [searchQuery, setSearchQuery] = useState(''); // Estado para controlar a pesquisa
-  const [filter, setFilter] = useState<EquipmentGet[]>([]); // Equipamentos filtrados
-  const [errorMessage, setErrorMessage] = useState(''); 
-  const [isLoading, setIsLoading] = useState(false); 
-  const [isScanning, setIsScanning] = useState(false); 
-  const [permission, requestPermission] = useCameraPermissions(); 
+export default function AlterarEquip() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState<EquipmentGet[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -50,7 +50,7 @@ export default function EntradaSaidaEquip() {
     }
   };
 
-  const handleQRCodeScanned = (result: { data: string }) => {
+  const handleQRCodeScanned = (result: BarcodeScanningResult) => {
     if (result.data) {
       setSearchQuery(result.data);
       setIsScanning(false);
@@ -60,10 +60,9 @@ export default function EntradaSaidaEquip() {
   return (
     <View style={styles.container}>
       <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Entrada e Saída de Equipamentos</Text>
+        <Text style={styles.pageTitleLabel}>Alterar Equipamento</Text>
       </View>
 
-      {/* Barra de Pesquisa */}
       <View>
         <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -75,42 +74,29 @@ export default function EntradaSaidaEquip() {
             accessibilityLabel="Campo de busca de equipamento"
           />
           <TouchableOpacity onPress={() => setIsScanning(true)}>
-            <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
+            <Ionicons name="qr-code-outline" size={30} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
 
-        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
+        <Button mode="contained" style={styles.searchButton} onPress={handleSearch} loading={isLoading}>
           Buscar
         </Button>
       </View>
 
-      {/* Leitor de QR Code */}
       {isScanning && permission?.granted && (
-        <View style={{ marginTop: 20 }}>
-          <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
-          <Button
-            mode="contained" // Consistência com os outros botões
-            style={[styles.searchButton, { marginTop: 10 }]} // Aplicado o estilo existente
-            onPress={() => setIsScanning(false)}
-          >
-            Fechar
-          </Button>
-        </View>
+        <CameraView
+          style={{ width: '100%', height: 300 }}
+          onBarcodeScanned={handleQRCodeScanned}
+          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+        />
       )}
 
-      {/* Mensagem de erro */}
-      {errorMessage ? (
-        <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{errorMessage}</Text>
-      ) : null}
-
-      {/* Lista de equipamentos */}
       <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
         <View style={{ marginBottom: 5 }} />
         <EquipmentTable equipments={filter} />
       </ScrollView>
-
-      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
-        Voltar
+      <Button mode="contained" style={[styles.searchButton, { width: '100%' }]} onPress={() => router.push('/home_pages/gerenciar_equip')}>
+          Voltar
       </Button>
     </View>
   );

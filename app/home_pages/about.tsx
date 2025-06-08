@@ -1,8 +1,8 @@
 import { View, Text, ScrollView } from 'react-native'
-import styles from '../components/styles'
-import api from '../helpers/axios'
+import styles from '../../components/styles'
+import api from '../../helpers/axios'
 import { useEffect, useState } from 'react'
-import Logo from '../components/handle-images/logo'
+import Logo from '../../components/handle-images/logo'
 
 export default function About() {
 

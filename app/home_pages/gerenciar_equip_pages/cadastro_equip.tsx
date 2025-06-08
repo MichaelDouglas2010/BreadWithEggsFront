@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { useAuth } from '../context/auth';
-import styles from '../components/styles';
+import { useAuth } from '../../../context/auth';
+import styles from '../../../components/styles';
 import { Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
-import api from '../helpers/axios';
+import api from '../../../helpers/axios';
 import React from 'react';
 
 export default function CadastrarEquip() {
@@ -85,12 +85,7 @@ export default function CadastrarEquip() {
               >
                 Cadastrar
               </Button>
-
-              <Button
-                mode="outlined"
-                style={[styles.cancelButton, { width: 150, height: 50, marginTop: 10 }]}
-                onPress={() => router.push('/selec_equip')}
-              >
+              <Button mode="contained" style={[styles.searchButton, { width: 150, height: 50 }]} onPress={() => router.push('/home_pages/gerenciar_equip')}> 
                 Voltar
               </Button>
             </>

@@ -3,27 +3,26 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-nativ
 import { Button } from 'react-native-paper';
 import { useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
-import styles from '../components/styles';
-import api from '../helpers/axios';
-import { EquipmentGet } from '../components/interfaces/equipment';
+import styles from '../../components/styles';
+import api from '../../helpers/axios';
+import { EquipmentGet } from '../../components/interfaces/equipment';
 import axios from 'axios';
-import EquipmentTable2 from '../components/tabelas/Equipament_tableCopy';
+import EquipmentTable from '../../components/tabelas/Equipament_registro';
 import { router } from 'expo-router';
-import QRCodeScanner from '../components/sensor/QRCodeScanner';
+import QRCodeScanner from '../../components/sensor/QRCodeScanner';
 
-export default function ConsultarEquip() {
-  const [searchQuery, setSearchQuery] = useState('');
+export default function EntradaSaidaEquip() {
+  const [searchQuery, setSearchQuery] = useState(''); 
   const [filter, setFilter] = useState<EquipmentGet[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [isScanning, setIsScanning] = useState(false); 
+  const [permission, requestPermission] = useCameraPermissions(); 
 
   const handleSearch = async () => {
     setIsLoading(true);
     try {
       let response: { data: EquipmentGet[] };
-
       if (searchQuery) {
         response = await api.get(`/equipment?search=${searchQuery}`);
         if (response.data.length > 0) {
@@ -58,57 +57,40 @@ export default function ConsultarEquip() {
     }
   };
 
-  const handleQRCodeButtonPress = async () => {
-    if (!permission?.granted) {
-      const response = await requestPermission();
-      if (!response.granted) {
-        setErrorMessage('Permissão da câmera é necessária para escanear QR Code');
-        return;
-      }
-    }
-    setIsScanning(true);
-  };
-
   return (
     <View style={styles.container}>
-      {/* Título da página */}
       <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Consultar Equipamento</Text>
+        <Text style={styles.pageTitleLabel}>Registrar Uso dos Equipamentos</Text>
       </View>
 
-      {/* Campo de busca e botão de QR Code */}
+      {/* Barra de Pesquisa */}
       <View>
-        <Text style={styles.inputLabel}>Descrição</Text>
+        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
             style={[styles.searchInput, { flex: 1 }]}
-            placeholder="Digite a descrição ou ID do equipamento"
+            placeholder="Insira a descrição ou ID do equip"
             value={searchQuery}
             onChangeText={setSearchQuery}
             accessibilityLabel="Campo de busca de equipamento"
           />
-          <TouchableOpacity onPress={handleQRCodeButtonPress} accessibilityLabel="Botão para escanear QR Code">
+          <TouchableOpacity onPress={() => setIsScanning(true)}>
             <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
 
-        <Button
-          mode="contained"
-          style={[styles.searchButton, { backgroundColor: '#FF6F00' }]}
-          onPress={handleSearch}
-          accessibilityLabel="Botão para buscar equipamentos"
-        >
+        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
           Buscar
         </Button>
       </View>
 
-      {/* Leitor de QR Code (se permitido e ativado) */}
+      {/* Leitor de QR Code */}
       {isScanning && permission?.granted && (
         <View style={{ marginTop: 20 }}>
           <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
           <Button
-            mode="contained"
-            style={[styles.searchButton, { marginTop: 10 }]}
+            mode="contained" 
+            style={[styles.searchButton, { marginTop: 10 }]} 
             onPress={() => setIsScanning(false)}
           >
             Fechar
@@ -116,25 +98,18 @@ export default function ConsultarEquip() {
         </View>
       )}
 
-      {/* Mensagem de erro (se houver) */}
+      {/* Mensagem de erro */}
       {errorMessage ? (
-        <Text style={styles.errorText} accessibilityLabel="Mensagem de erro">
-          {errorMessage}
-        </Text>
+        <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{errorMessage}</Text>
       ) : null}
 
-      {/* Lista de equipamentos em tabela */}
+      {/* Lista de equipamentos */}
       <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
-        <EquipmentTable2 equipments={filter} />
+        <View style={{ marginBottom: 5 }} />
+        <EquipmentTable equipments={filter} />
       </ScrollView>
 
-      {/* Botão de voltar */}
-      <Button
-        mode="contained"
-        style={styles.searchButton}
-        onPress={() => router.push('/home')}
-        accessibilityLabel="Botão para voltar à página inicial"
-      >
+      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
         Voltar
       </Button>
     </View>

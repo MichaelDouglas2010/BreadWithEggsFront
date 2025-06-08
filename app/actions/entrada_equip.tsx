@@ -19,7 +19,6 @@ export default function EntradaEquip() {
           onPress: async () => {
             setIsLoading(true);
             try {
-              // Simulação de lógica para confirmar a entrada do equipamento
               console.log(`Entrada confirmada para o equipamento ${equipId}`);
               Alert.alert('Sucesso', 'Entrada confirmada com sucesso!');
               router.push('/consultar_equip');

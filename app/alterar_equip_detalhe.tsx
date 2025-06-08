@@ -32,7 +32,6 @@ export default function ConsultarEquipDetalhe() {
             })
     }, [])
 
-    // Função para atualizar os dados de um equipamento
     const handleUpdate = async () => {
         if (!equipment) return
 

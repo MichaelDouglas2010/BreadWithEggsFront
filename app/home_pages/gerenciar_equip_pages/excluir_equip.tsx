@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-import { useAuth } from '../context/auth';
-import styles from '../components/styles';
+import { useAuth } from '../../../context/auth';
+import styles from '../../../components/styles';
 import { Button } from 'react-native-paper';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
-import api from '../helpers/axios';
-import { EquipmentGet } from '../components/interfaces/equipment';
+import api from '../../../helpers/axios';
+import { EquipmentGet } from '../../../components/interfaces/equipment';
 import axios from 'axios';
-import EquipmentTable from '../components/tabelas/Equipment_table_delete';
+import EquipmentTable from '../../../components/tabelas/Equipment_table_delete';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -95,9 +95,8 @@ export default function ExcluirEquip() {
         <View style={{ marginBottom: 5 }} />
         <EquipmentTable equipments={filter} />
       </ScrollView>
-      
-      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/selec_equip')}>
-        Voltar
+      <Button mode="contained" style={[styles.searchButton, { width: '100%' }]} onPress={() => router.push('/home_pages/gerenciar_equip')}>
+          Voltar
       </Button>
     </View>
   );
