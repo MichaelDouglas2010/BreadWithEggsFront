@@ -14,7 +14,7 @@ export default function ExcluirEquipDetalhe() {
         const date = new Date(dateString);
 
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Ajusta para o formato de 2 dígitos
+        const month = String(date.getMonth() + 1).padStart(2, '0'); 
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -48,10 +48,11 @@ export default function ExcluirEquipDetalhe() {
         try {
           await api.delete(`/equipment/${equipId}`)
           Alert.alert('Sucesso', 'Equipamento excluído com sucesso!')
-          router.push('/excluir_equip')
+          router.push('/home_pages/gerenciar_equip')
         } catch (e) {
           console.log("Erro ao excluir equipamento: " + e)
           Alert.alert('Erro', 'Não foi possível excluir o equipamento.')
+          router.push('/home_pages/gerenciar_equip')
         }
       }
 
@@ -71,7 +72,7 @@ export default function ExcluirEquipDetalhe() {
                 <Text style={localStyles.text}>QrCode: {equipment?.qrCodeData}</Text>
             </ScrollView>
             <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/excluir_equip')}>
+            <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/home_pages/gerenciar_equip')}>
                 Cancelar
             </Button>
             <Button mode="contained" style={[styles.searchButton, { marginLeft: 40, backgroundColor: '#75181D' }]} onPress={()=>handleDelete()}>

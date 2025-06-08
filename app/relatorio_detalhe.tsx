@@ -29,13 +29,13 @@ export default function RelatorioDetalhe() {
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'ativo':
-        return 'green'
+        return '#388e3c'
       case 'inativo':
-        return 'red'
+        return '#d32f2f'
       case 'emprestado':
-        return 'yellow'
+        return '#fbc02d'
       default:
-        return 'gray'
+        return '#757575'
     }
   }
 
@@ -64,44 +64,51 @@ export default function RelatorioDetalhe() {
   }, [list])
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>{equipment?.description}</Text>
+    <View style={localStyles.container}>
+      <View style={localStyles.headerBox}>
+        <Text style={localStyles.headerTitle}>{equipment?.description}</Text>
       </View>
-      <ScrollView style={[styles.consEquipMenu]}>
-        <Text style={[localStyles.text, { marginTop: 20 }]}>
-          Descrição: {equipment?.description}
-        </Text>
-        <Text style={localStyles.text}>Marca: {equipment?.marca}</Text>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <Text style={localStyles.text}>Status: </Text>
-          <Text style={[localStyles.text, { color: getStatusColor(equipment?.status) }]}>
-            {equipment?.status.charAt(0).toUpperCase()}
-            {equipment?.status.slice(1).toLowerCase()}
-          </Text>
+      <ScrollView style={localStyles.scrollArea} contentContainerStyle={{ padding: 16 }}>
+        <View style={localStyles.infoCard}>
+          <Text style={localStyles.label}>Descrição:</Text>
+          <Text style={localStyles.value}>{equipment?.description}</Text>
+          <Text style={localStyles.label}>Marca:</Text>
+          <Text style={localStyles.value}>{equipment?.marca}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Text style={localStyles.label}>Status: </Text>
+            <Text style={[localStyles.value, { color: getStatusColor(equipment?.status), fontWeight: 'bold' }]}>
+              {equipment?.status?.charAt(0).toUpperCase()}
+              {equipment?.status?.slice(1).toLowerCase()}
+            </Text>
+          </View>
+          <Text style={localStyles.label}>Data de Registro:</Text>
+          <Text style={localStyles.value}>{equipment ? formatDate(equipment?.dataEntrada) : ''}</Text>
+          <Text style={localStyles.label}>QrCode:</Text>
+          <Text style={localStyles.value}>{equipment?.qrCodeData}</Text>
+            <Text style={[localStyles.label, { marginTop: 15 }]}>
+            Tempo total: <Text style={localStyles.value}>{list.reduce((acumulador, valorAtual) => acumulador + valorAtual.totalHours, 0).toFixed(2)} horas</Text>
+            </Text>
         </View>
-        <Text style={localStyles.text}>
-          Data de Registro: {equipment ? formatDate(equipment?.dataEntrada) : ''}
-        </Text>
-        <Text style={localStyles.text}>QrCode: {equipment?.qrCodeData}</Text>
-        <Text style={[localStyles.text,{marginTop:15}]}>Tempo total: {list. reduce((acumulador, valorAtual) => acumulador + valorAtual.totalHours, 0)} horas</Text>
+        <Text style={[localStyles.sectionTitle, { marginTop: 24 }]}>Histórico de Uso</Text>
         {list.map((us, index) => (
           <View
             key={index}
-            style={{ borderWidth: 1, borderColor: 'white', marginBottom: 5, marginTop: 5 }}
+            style={localStyles.usageCard}
           >
-            <Text style={localStyles.text}>Atividade: {us.activity}</Text>
-            <Text style={[localStyles.text, { marginTop: 5, fontSize:15 }]}>
-              Usuário: {users[index] || 'Carregando...'}
-            </Text>
-            <Text style={[localStyles.text, {fontSize:15}]}>Horário de Início: {formatDate(us.startTime)}</Text>
-            <Text style={[localStyles.text, {fontSize:15}]}>Horário de Devolução: {formatDate(us.endTime)}</Text>
-            <Text style={[localStyles.text, {fontSize:15}]}>Tempo: {us.totalHours}h</Text>
+            <Text style={localStyles.usageLabel}>Atividade: <Text style={localStyles.usageValue}>{us.activity}</Text></Text>
+            <Text style={localStyles.usageLabel}>Usuário: <Text style={localStyles.usageValue}>{users[index] || 'Não definido'}</Text></Text>
+            <Text style={localStyles.usageLabel}>Horário de Início: <Text style={localStyles.usageValue}>{formatDate(us.startTime)}</Text></Text>
+            <Text style={localStyles.usageLabel}>Horário de Devolução: <Text style={localStyles.usageValue}>{formatDate(us.endTime)}</Text></Text>
+            <Text style={localStyles.usageLabel}>Tempo: <Text style={localStyles.usageValue}>{us.totalHours.toFixed(2)}h</Text></Text>
           </View>
         ))}
       </ScrollView>
-      <View style={{ flex: 1, flexDirection: 'row' }}>
-        <Button mode="contained" style={[styles.searchButton,]} onPress={() => router.push('/relatorio')}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 16 }}>
+        <Button
+          mode="contained"
+          style={styles.searchButton}
+          onPress={() => router.push('/home_pages/relatorio')}
+        >
           Voltar
         </Button>
       </View>
@@ -110,9 +117,90 @@ export default function RelatorioDetalhe() {
 }
 
 const localStyles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    color: 'white',
-    marginBottom: 5,
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  headerBox: {
+    backgroundColor: '#E3EAF2',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#222',
+    letterSpacing: 0.5,
+  },
+  scrollArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  infoCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 18,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  label: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  value: {
+    fontSize: 16,
+    color: '#111',
+    marginBottom: 8,
+    fontWeight: '400',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    color: '#222',
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginLeft: 2,
+  },
+  usageCard: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 14,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  usageLabel: {
+    fontSize: 15,
+    color: '#333',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  usageValue: {
+    fontWeight: '400',
+    color: '#111',
+  },
+  backButton: {
+    backgroundColor: '#007B83',
+    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 6,
+    alignSelf: 'center',
+    elevation: 2,
   },
 })
