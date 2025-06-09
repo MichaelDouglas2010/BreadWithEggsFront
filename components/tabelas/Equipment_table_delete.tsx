@@ -48,7 +48,7 @@ const EquipmentTableDelete: React.FC<EquipmentTableProps> = ({ equipments }) => 
 
   const handleRowPress = (item: EquipmentGet) => {
     console.log(`Navigating to delete details of equipment ID: ${item._id}`);
-    router.push(`/excluir_equip_detalhe?equipId=${item._id}`);
+    router.push(`/home_pages/gerenciar_equip_pages/excluir_equip?id=${item._id}`);
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

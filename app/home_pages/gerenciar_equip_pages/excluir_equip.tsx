@@ -11,6 +11,7 @@ import EquipmentTable from '../../../components/tabelas/Equipment_table_delete';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+
 export default function ExcluirEquip() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EquipmentGet[]>([]);
