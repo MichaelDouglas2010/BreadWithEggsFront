@@ -10,18 +10,19 @@ interface EquipmentTableProps {
 
 const EquipmentTableDelete: React.FC<EquipmentTableProps> = ({ equipments }) => {
   const router = useRouter();
+
   const columns = [
     {
       key: 'status',
       label: 'Status',
       width: 70,
       render: (item: EquipmentGet) => {
-        const statusColors: Record<string, string> = {
+        const statusIcons: Record<string, string> = {
           ativo: '🟢',
-          inativo: '🔴',
           emprestado: '🟡',
+          inativo: '🔴',
         };
-        return <Text>{statusColors[item.status] || '⚪'}</Text>;
+        return <Text>{statusIcons[item.status] || '⚪'}</Text>;
       },
     },
     {
@@ -47,8 +48,7 @@ const EquipmentTableDelete: React.FC<EquipmentTableProps> = ({ equipments }) => 
   ];
 
   const handleRowPress = (item: EquipmentGet) => {
-    console.log(`Navigating to delete details of equipment ID: ${item._id}`);
-    router.push(`/home_pages/gerenciar_equip_pages/excluir_equip?id=${item._id}`);
+    router.push(`/excluir_equip_detalhe?id=${item._id}`);
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

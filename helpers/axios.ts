@@ -22,11 +22,14 @@ api.interceptors.request.use(
 
 // Interceptor de resposta
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        console.error('Erro de API:', error);
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    // Só loga se não for 404 (útil para checagem de e-mail)
+    if (!(error.response && error.response.status === 404)) {
+      console.error('Erro de API:', error);
     }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

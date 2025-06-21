@@ -48,7 +48,7 @@ const EquipmentTableCopy: React.FC<EquipmentTableProps> = ({ equipments }) => {
   ];
 
   const handleRowPress = (item: EquipmentGet) => {
-    router.push(`/consultar_equip_detalhe?equipId=${item._id}`);
+    router.push(`/consultar_equip_detalhe?id=${item._id}`);
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

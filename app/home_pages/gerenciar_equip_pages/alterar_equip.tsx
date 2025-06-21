@@ -7,7 +7,7 @@ import styles from '../../../components/styles';
 import api from '../../../helpers/axios';
 import { EquipmentGet } from '../../../components/interfaces/equipment';
 import axios from 'axios';
-import EquipmentTable from '../../../components/tabelas/Equipament_consultar';
+import EquipmentTable from '../../../components/tabelas/Equipment_table_update';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
