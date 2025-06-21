@@ -10,6 +10,7 @@ import axios from 'axios';
 import EquipmentTable from '../../../components/tabelas/Equipment_table_delete';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import QRCodeScanner from '../../../components/sensor/QRCodeScanner';
 
 
 export default function ExcluirEquip() {
@@ -75,7 +76,7 @@ export default function ExcluirEquip() {
             accessibilityLabel="Campo de busca de equipamento"
           />
           <TouchableOpacity onPress={() => setIsScanning(true)}>
-            <Ionicons name="qr-code-outline" size={30} color="white" style={{ marginLeft: 10 }} />
+            <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
 
@@ -84,12 +85,18 @@ export default function ExcluirEquip() {
         </Button>
       </View>
 
+      {/* Leitor de QR Code */}
       {isScanning && permission?.granted && (
-        <CameraView
-          style={{ width: '100%', height: 300 }}
-          onBarcodeScanned={handleQRCodeScanned}
-          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-        />
+        <View style={{ marginTop: 20 }}>
+          <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+          <Button
+            mode="contained" 
+            style={[styles.searchButton, { marginTop: 10 }]} 
+            onPress={() => setIsScanning(false)}
+          >
+            Fechar
+          </Button>
+        </View>
       )}
 
       <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
