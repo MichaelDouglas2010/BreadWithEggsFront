@@ -8,7 +8,7 @@ import ProfileImage from '../components/handle-images/profile-image';
 import ChatScreen from '../components/chatboot/chat_boot';
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuth(); // <-- agora usando signOut
   const [isChatVisible, setChatVisible] = useState(false);
 
   // Função para sair da conta
@@ -22,8 +22,8 @@ export default function Home() {
           text: 'Sair',
           style: 'destructive',
           onPress: () => {
-            if (signOut) signOut();
-            router.push('index');
+            if (signOut) signOut(); // faz logout
+            router.replace('/'); // volta para tela de login
           },
         },
       ]
@@ -221,3 +221,4 @@ const floatingStyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 });
+

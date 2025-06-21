@@ -35,6 +35,16 @@ export default function Login() {
         <Text>Recuperar senha</Text>
       </Link>
 
+      <Link href={'/cadastrar_usuario'} style={{ alignSelf: 'center', marginTop: 24 }}>
+        <Button
+          mode="outlined"
+          style={{ borderColor: '#1a73e8', borderWidth: 1, borderRadius: 8, marginTop: 4, paddingVertical: 10, paddingHorizontal: 16, minWidth: 180 }}
+          labelStyle={{ color: '#1a73e8', fontWeight: 'bold', fontSize: 16 }}
+        >
+          Criar nova conta
+        </Button>
+      </Link>
+
     </View>
   )
 }

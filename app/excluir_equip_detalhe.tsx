@@ -23,7 +23,8 @@ export default function ExcluirEquipDetalhe() {
     }
 
     const [equipment, setEquipment] = useState<EquipmentGet>()
-    const { equipId } = useLocalSearchParams()
+    const { id } = useLocalSearchParams() // <-- use 'id' e não 'equipId'
+
     const getStatusColor = (status?: string) => {
         switch (status) {
             case 'ativo':
@@ -38,11 +39,11 @@ export default function ExcluirEquipDetalhe() {
     };
 
     useEffect(() => {
-        api.get('/equipment/' + equipId)
+        api.get('/equipment/' + id)
             .then((response) => {
                 setEquipment(response.data)
             })
-    }, [])
+    }, [id])
 
     const handleDelete = async () => {
         Alert.alert(
@@ -55,11 +56,10 @@ export default function ExcluirEquipDetalhe() {
               style: 'destructive',
               onPress: async () => {
                 try {
-                  await api.delete(`/equipment/${equipId}`)
+                  await api.delete(`/equipment/${id}`) // <-- use 'id'
                   Alert.alert('Sucesso', 'Equipamento excluído com sucesso!')
                   router.push('/home_pages/gerenciar_equip')
                 } catch (e) {
-                  console.log("Erro ao excluir equipamento: " + e)
                   Alert.alert('Erro', 'Não foi possível excluir o equipamento.')
                   router.push('/home_pages/gerenciar_equip')
                 }
@@ -130,19 +130,19 @@ const localStyles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#222',
+        color: '#111', 
         marginBottom: 15,
         textAlign: 'center',
     },
     label: {
         fontSize: 16,
-        color: '#444',
+        color: '#111', // preto
         marginTop: 10,
         fontWeight: '600',
     },
     value: {
         fontSize: 18,
-        color: '#111',
+        color: '#111', // preto
         marginBottom: 5,
     },
     button: {

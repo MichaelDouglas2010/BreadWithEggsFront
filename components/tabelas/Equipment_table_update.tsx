@@ -2,25 +2,27 @@ import React from 'react';
 import { Text } from 'react-native';
 import GenericTable from './GenericTable';
 import { EquipmentGet } from '../interfaces/equipment';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
 }
 
 const EquipmentTableUpdate: React.FC<EquipmentTableProps> = ({ equipments }) => {
+  const router = useRouter();
+
   const columns = [
     {
       key: 'status',
       label: 'Status',
       width: 70,
       render: (item: EquipmentGet) => {
-        const statusColors: Record<string, string> = {
+        const statusIcons: Record<string, string> = {
           ativo: '🟢',
-          inativo: '🔴',
           emprestado: '🟡',
+          inativo: '🔴',
         };
-        return <Text>{statusColors[item.status] || '⚪'}</Text>;
+        return <Text>{statusIcons[item.status] || '⚪'}</Text>;
       },
     },
     {
@@ -46,7 +48,7 @@ const EquipmentTableUpdate: React.FC<EquipmentTableProps> = ({ equipments }) => 
   ];
 
   const handleRowPress = (item: EquipmentGet) => {
-    router.push(`/alterar_equip_detalhe?id=${item._id}`)
+    router.push(`/alterar_equip_detalhe?equipId=${item._id}`);
   };
 
   return <GenericTable data={equipments} columns={columns} onRowPress={handleRowPress} />;

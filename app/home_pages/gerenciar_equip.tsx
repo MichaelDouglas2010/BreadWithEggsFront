@@ -36,7 +36,6 @@ export default function HomeScreen() {
         >
           Alterar Equipamento
         </Button>
-
         <Button
           mode="contained"
           style={localStyles.button}
