@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "reactnative-paper",    
+    "scheme": "reactnative-paper",
     "assetBundlePatterns": [
       "assets/*"
     ],
@@ -22,7 +22,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.michael2001.reactnativepaper"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -38,7 +43,12 @@
           "recordAudioAndroid": true
         }
       ]
-    
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7150c7a9-5b59-496d-8f43-cf4d0a0cd319"
+      }
+    }
   }
 }
