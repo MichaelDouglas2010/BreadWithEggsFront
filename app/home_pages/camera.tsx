@@ -1,79 +1,68 @@
-import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture, BarcodeScanningResult } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as FileSystem from 'expo-file-system'; // Para salvar no armazenamento
-import * as Permissions from 'expo-permissions'; // Para permissões de armazenamento
-import { Ionicons } from '@expo/vector-icons'; // Adicione esta importação
-
-interface CameraData {
-  uri: string;
-}
+import { Button, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import * as MediaLibrary from 'expo-media-library'; // NOVO: Importa o MediaLibrary para permissões e para salvar na galeria
+import { Ionicons } from '@expo/vector-icons';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
-  const [permission, requestPermission] = useCameraPermissions();
+  
+  // Permissão da Câmera
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  // Permissão da Galeria de Mídia
+  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [isScanning, setIsScanning] = useState(false); // Alterna entre câmera normal e scanner de QR Code
+  const [isScanning, setIsScanning] = useState(false);
   const cameraRef = useRef<CameraView>(null);
 
-  // Converte a imagem para Base64
-  const convertImageToBase64 = async (uri: string): Promise<string> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
+  // Captura a imagem e salva na galeria
+  const takeAndSavePicture = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
 
-    return new Promise<string>((resolve) => {
-      reader.onloadend = () => resolve(reader.result as string);
-    });
-  };
-
-  // Salva a imagem capturada no armazenamento
-  const saveImageToAsyncStorage = async (base64Image: string) => {
-    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-    if (status !== 'granted') {
-      console.error('Permissão de armazenamento negada');
+    if (!cameraRef.current) {
+      setIsLoading(false);
       return;
     }
-
-    const filename = `${Date.now()}.png`;
-    const directory = FileSystem.documentDirectory;
-    const path = `${directory}/${filename}`;
-
+    
     try {
-      await FileSystem.writeAsStringAsync(path, base64Image, { encoding: FileSystem.EncodingType.Base64 });
-      console.log('Imagem salva em:', path);
+      const picture = await cameraRef.current.takePictureAsync();
+      
+      if (!picture) {
+        console.log("Falha ao capturar a foto.");
+        setIsLoading(false);
+        return;
+      }
+
+      // CORRIGIDO: Pede permissão para a galeria usando o novo hook
+      if (!mediaLibraryPermission?.granted) {
+        const { status } = await requestMediaLibraryPermission();
+        if (status !== 'granted') {
+          alert('Precisamos de permissão para salvar a foto na sua galeria.');
+          setIsLoading(false);
+          return;
+        }
+      }
+      
+      // Salva a foto na galeria do usuário
+      await MediaLibrary.createAssetAsync(picture.uri);
+      alert('Foto salva na galeria!');
+
     } catch (error) {
-      console.error('Erro ao salvar imagem:', error);
+      console.error('Erro ao tirar ou salvar a foto:', error);
+      alert('Ocorreu um erro ao processar a foto.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Captura a imagem e salva
-  const takePicture = async () => {
-    setIsLoading(true);
-
-    if (!cameraRef.current) return;
-
-    const options = { quality: 1, skipProcessing: true };
-    const data: CameraData | CameraCapturedPicture | null | undefined = await cameraRef.current?.takePictureAsync(options);
-
-    if (data) {
-      const base64Image = await convertImageToBase64(data.uri);
-      await saveImageToAsyncStorage(base64Image);
-    } else {
-      console.error('Captura de imagem cancelada');
-    }
-
-    setIsLoading(false);
-  };
-
-  // Função para escanear QR Code
-  const scanQRCode = (result: BarcodeScanningResult) => {
-    if (result.data) {
-      alert(`QR Code escaneado: ${result.data}`);
-      setIsScanning(false); // Volta para modo câmera normal após leitura
+  // Função para lidar com o QR Code escaneado
+  const handleBarCodeScanned = (scanningResult: BarcodeScanningResult) => {
+    if (scanningResult.data) {
+      // Para o scanner para não ficar alertando sem parar
+      setIsScanning(false); 
+      alert(`QR Code escaneado: ${scanningResult.data}`);
     }
   };
 
@@ -82,35 +71,58 @@ export default function CameraScreen() {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
+  // Alterna entre o modo câmera e o modo scanner
   function toggleScannerMode() {
     setIsScanning(!isScanning);
   }
 
-  if (!permission) return <View />;
-  if (!permission.granted) {
+  // Verifica permissão da câmera
+  if (!cameraPermission) {
+    return <View />; // Tela de carregamento enquanto a permissão é verificada
+  }
+
+  if (!cameraPermission.granted) {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>Precisamos da sua permissão para usar a câmera</Text>
-        <Button onPress={requestPermission} title="Conceder Permissão" />
+        <Button onPress={requestCameraPermission} title="Conceder Permissão" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera}>
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing} // NOVO: Prop para controlar a câmera (frontal/traseira)
+        // CORRIGIDO: Ativa o scanner condicionalmente
+        onBarcodeScanned={isScanning ? handleBarCodeScanned : undefined}
+        barcodeScannerSettings={{
+          barcodeTypes: ["qr"], // Define os tipos de código para ler
+        }}
+      >
         <View style={styles.buttonContainer}>
+          {/* Botão de Inverter Câmera */}
           <TouchableOpacity style={styles.iconButton} onPress={toggleCameraFacing}>
-            <Ionicons name="camera-reverse-outline" size={24} color="white" />
+            <Ionicons name="camera-reverse-outline" size={30} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={toggleScannerMode}>
-            <Ionicons name={isScanning ? "camera-outline" : "qr-code-outline"} size={24} color="white" />
-          </TouchableOpacity>
+
+          {/* Botão de Tirar Foto (só aparece se não estiver escaneando) */}
           {!isScanning && (
-            <TouchableOpacity style={styles.iconButton} onPress={takePicture} disabled={isLoading}>
-              <Ionicons name="camera" size={24} color="white" />
+            <TouchableOpacity 
+              style={[styles.iconButton, styles.captureButton]} 
+              onPress={takeAndSavePicture} 
+              disabled={isLoading}
+            >
+              {isLoading ? <ActivityIndicator color="white" /> : <Ionicons name="camera" size={40} color="white" />}
             </TouchableOpacity>
           )}
+
+          {/* Botão de Alternar Modo Scanner */}
+          <TouchableOpacity style={styles.iconButton} onPress={toggleScannerMode}>
+            <Ionicons name={isScanning ? "stop-circle-outline" : "qr-code-outline"} size={30} color="white" />
+          </TouchableOpacity>
         </View>
       </CameraView>
     </View>
@@ -121,45 +133,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    justifyContent: 'center',
   },
   camera: {
     flex: 1,
-    justifyContent: 'flex-end',
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 30,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
   },
   iconButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: 12,
-    borderRadius: 50,
-    width: 60,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     height: 60,
+    width: 60,
+    borderRadius: 30,
   },
-  buttonText: {
-    fontSize: 12,
-    color: 'white',
-    marginTop: 5,
-    textAlign: 'center',
+  captureButton: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: 'white',
   },
   message: {
-    position: 'absolute',
-    top: 20,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 10,
-    borderRadius: 8,
-    color: 'white',
-    fontSize: 16,
     textAlign: 'center',
-    maxWidth: '80%',
-  }
+    fontSize: 18,
+    color: 'white',
+    padding: 20,
+  },
 });

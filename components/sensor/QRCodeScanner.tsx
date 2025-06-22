@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { CameraView, BarcodeScanningResult } from 'expo-camera';
 
 interface QRCodeScannerProps {
