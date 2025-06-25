@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, ScrollView, StyleSheet, Alert } from 'react-native'
-import styles from '../components/styles'
 import api from '../helpers/axios'
-import { EquipmentGet } from '../components/interfaces/equipment'
+import { Equipment } from '../components/interfaces/equipment'
 import { router, useLocalSearchParams } from 'expo-router';
 import { Button } from 'react-native-paper'
 
@@ -22,7 +21,7 @@ export default function ExcluirEquipDetalhe() {
         return `${year}-${month}-${day}, ${hours}:${minutes}`;
     }
 
-    const [equipment, setEquipment] = useState<EquipmentGet>()
+    const [equipment, setEquipment] = useState<Equipment>()
     const { id } = useLocalSearchParams() // <-- use 'id' e não 'equipId'
 
     const getStatusColor = (status?: string) => {

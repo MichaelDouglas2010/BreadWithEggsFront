@@ -1,21 +1,29 @@
-import { ObjectId } from 'mongodb'
-
-export interface UsageRecordGet{
-    id: ObjectId
-    equipmentId: string
-    userId: string
-    activity: string
-    startTime: string
-    endTime: string
-    totalHours: number
-    createdAt: string
+export interface UsageRecord {
+  _id: string;
+  equipmentId: string;
+  userId: string;
+  description?: string;
+  marca?: string;
+  activity: string;
+  startTime: string;
+  assinatura: string;
+  observacoes: string;
+  retiradoPor: string;
+  totalHours: number;
+  endTime: string | null; 
 }
 
-export interface UsageRecordPost{
-    equipmentId: string
-    userId: string
-    activity: string
-    startTime: string
-    endTime: string
-    totalHours: number
+
+export interface UsageRecordGet {
+  equipmentId: string;
+  userId: string;
+  description?: string;
+  marca?: string;
+  activity: string;
+  startTime: string;
+  assinatura: string;
+  observacoes: string;
+  retiradoPor: string;
+  totalHours: number;
+  endTime?: string | null;
 }

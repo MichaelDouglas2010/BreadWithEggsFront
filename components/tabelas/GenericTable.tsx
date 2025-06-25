@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
 
 interface ColumnConfig {
   key: string;

@@ -1,7 +1,5 @@
-import { ObjectId } from 'mongodb'
-
 export interface MaintenanceGet{
-    id: ObjectId
+    _id: string;
     equipmentId: string
     description: string
     cost: number

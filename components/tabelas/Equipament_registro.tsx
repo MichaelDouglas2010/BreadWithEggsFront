@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { EquipmentGet } from '../interfaces/equipment';
+// Certifique-se que o nome da interface aqui é o mesmo que você está usando
+import { EquipmentGet } from '../interfaces/equipment'; 
 import { useRouter } from 'expo-router';
-import tableStyles from '../styles/tableStyles'; // Importando o estilo centralizado
+import tableStyles from '../styles/tableStyles';
 
 interface EquipmentTableProps {
   equipments: EquipmentGet[];
@@ -32,11 +33,27 @@ const EquipmentTable: React.FC<EquipmentTableProps> = ({ equipments }) => {
     if (item.status === 'ativo') {
       icon = '➡';
       color = '#FF6F00';
-      onPress = () => router.push({ pathname: '/actions/saida_equip', params: { equipId: item._id.toString() } });
+      // CORREÇÃO AQUI: Adicionando description e marca aos parâmetros
+      onPress = () => router.push({ 
+        pathname: '/actions/saida_equip', 
+        params: { 
+          equipId: item._id.toString(),
+          description: item.description,
+          marca: item.marca
+        } 
+      });
     } else if (item.status === 'emprestado') {
       icon = '⬅';
       color = '#32cd32';
-      onPress = () => router.push({ pathname: '/actions/entrada_equip', params: { equipId: item._id.toString() } });
+      // CORREÇÃO AQUI: Adicionando também para a tela de entrada
+      onPress = () => router.push({ 
+        pathname: '/actions/entrada_equip', 
+        params: { 
+          equipId: item._id.toString(),
+          description: item.description,
+          marca: item.marca
+        } 
+      });
     } else if (item.status === 'inativo') {
       icon = '🚫';
       color = '#808080';

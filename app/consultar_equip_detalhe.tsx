@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native'
-import styles from '../components/styles'
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'
 import { router, useLocalSearchParams } from 'expo-router'

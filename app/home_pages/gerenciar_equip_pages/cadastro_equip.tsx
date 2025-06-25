@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../../context/auth';
-import styles from '../../../components/styles';
 import { Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import api from '../../../helpers/axios';
-import React from 'react';
 
 export default function CadastrarEquip() {
   const { user } = useAuth();

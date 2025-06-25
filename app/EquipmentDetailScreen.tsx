@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, Button } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';

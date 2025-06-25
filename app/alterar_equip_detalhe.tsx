@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native'
-import styles from '../components/styles'
 import RNPickerSelect from 'react-native-picker-select'
 import api from '../helpers/axios'
 import { EquipmentGet } from '../components/interfaces/equipment'

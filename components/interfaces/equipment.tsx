@@ -1,18 +1,16 @@
-import { ObjectId } from 'mongodb'
-
-export interface EquipmentGet {
-    _id: ObjectId
-    description: string
-    marca: string
-    dataEntrada: string
-    status: string
-    qrCodeData: string
+export interface Equipment {
+  description: string;
+  marca: string;
+  dataEntrada: string; // Data no formato ISO
+  status: 'ativo' | 'inativo' | 'emprestado';
+  qrCodeData?: string; // Opcional
 }
 
-export interface EquipmentPost {
-    description: string
-    marca: string
-    dataEntrada: string
-    status: string
-    qrCodeData: string
+export interface EquipmentGet {
+  _id: string; // No frontend, o ObjectId sempre será uma string
+  description: string;
+  marca: string;
+  dataEntrada: string; // Data no formato ISO
+  status: 'ativo' | 'inativo' | 'emprestado';
+  qrCodeData?: string; // Opcional
 }

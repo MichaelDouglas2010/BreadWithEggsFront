@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { View, Text, TextInput, ScrollView, Alert, ActivityIndicator, StyleSheet } from 'react-native'
-import styles from '../components/styles'
 import { Button } from 'react-native-paper'
 import { useRouter } from 'expo-router'
 import api from '../helpers/axios'
-import React from 'react'
 
 export default function CadastrarUsuario() {
   const router = useRouter()

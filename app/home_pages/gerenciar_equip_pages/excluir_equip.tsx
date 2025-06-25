@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-import { useAuth } from '../../../context/auth';
 import styles from '../../../components/styles';
 import { Button } from 'react-native-paper';
-import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import api from '../../../helpers/axios';
 import { EquipmentGet } from '../../../components/interfaces/equipment';
 import axios from 'axios';
