@@ -1,110 +1,227 @@
-import { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-import styles from '../../../components/styles';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  ActivityIndicator, 
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Alert
+} from 'react-native';
 import { Button } from 'react-native-paper';
 import { useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import api from '../../../helpers/axios';
 import { EquipmentGet } from '../../../components/interfaces/equipment';
-import axios from 'axios';
-import EquipmentTable from '../../../components/tabelas/Equipment_table_delete';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import EquipmentTable from '../../../components/tabelas/Equipment_table_delete'; // Tabela para exclusão
 import QRCodeScanner from '../../../components/sensor/QRCodeScanner';
 
-
 export default function ExcluirEquip() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EquipmentGet[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
   const handleSearch = async () => {
     setIsLoading(true);
+    setErrorMessage('');
     try {
-      let response: { data: EquipmentGet[] };
-      if (searchQuery) {
-        response = await api.get(`/equipment?search=${searchQuery}`);
-        if (response.data.length > 0) {
-          setFilter(response.data);
-          setErrorMessage('');
-        } else {
-          setFilter([]);
-          setErrorMessage('Equipamento inexistente');
-        }
-      } else {
-        response = await api.get('/equipment');
+      const endpoint = searchQuery.trim() ? `/equipment?search=${searchQuery.trim()}` : '/equipment';
+      const response = await api.get(endpoint);
+
+      if (response.data && response.data.length > 0) {
         setFilter(response.data);
-        setErrorMessage('');
+      } else {
+        setFilter([]);
+        setErrorMessage(searchQuery.trim() ? 'Equipamento inexistente.' : 'Nenhum equipamento cadastrado.');
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Error response:', error.response);
-        setErrorMessage(`Erro: ${error.response.data.message || 'Erro ao buscar equipamentos'}`);
-      } else {
-        console.error('Erro na busca: ', error);
-        setErrorMessage('Erro ao buscar equipamentos');
-      }
+      console.error('Erro na busca: ', error);
+      setErrorMessage('Falha ao buscar equipamentos. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
   };
+  
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
   const handleQRCodeScanned = (result: BarcodeScanningResult) => {
     if (result.data) {
       setSearchQuery(result.data);
       setIsScanning(false);
+      handleSearch();
     }
+  };
+  
+  const handleQRCodeButtonPress = async () => {
+    const response = await requestPermission();
+    if (!response.granted) {
+      Alert.alert('Permissão Negada', 'A permissão da câmera é necessária para escanear QR Code.');
+      return;
+    }
+    setIsScanning(true);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.pageTitleBox]}>
-        <Text style={styles.pageTitleLabel}>Excluir Equipamento</Text>
-      </View>
-
-      <View>
-        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TextInput
-            style={[styles.searchInput, { flex: 1 }]}
-            placeholder="Insira a descrição ou ID do equip"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            accessibilityLabel="Campo de busca de equipamento"
-          />
-          <TouchableOpacity onPress={() => setIsScanning(true)}>
-            <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
-          </TouchableOpacity>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={localStyles.container}
+    >
+        <View style={localStyles.headerBox}>
+          <Text style={localStyles.headerTitle}>Excluir Equipamento</Text>
         </View>
 
-        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
-          Buscar
-        </Button>
-      </View>
-
-      {/* Leitor de QR Code */}
-      {isScanning && permission?.granted && (
-        <View style={{ marginTop: 20 }}>
-          <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+        <View style={localStyles.searchCard}>
+          <Text style={localStyles.inputLabel}>Descrição ou ID</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              style={[localStyles.searchInput, { flex: 1 }]}
+              placeholder="Digite para buscar..."
+              placeholderTextColor="#999"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearch}
+            />
+            <TouchableOpacity onPress={handleQRCodeButtonPress}>
+              <Ionicons name="qr-code-outline" size={30} color="#dc3545" style={{ marginLeft: 10 }} />
+            </TouchableOpacity>
+          </View>
           <Button
-            mode="contained" 
-            style={[styles.searchButton, { marginTop: 10 }]} 
-            onPress={() => setIsScanning(false)}
+            mode="contained"
+            style={localStyles.button}
+            labelStyle={localStyles.buttonLabel}
+            onPress={handleSearch}
+            loading={isLoading}
+            disabled={isLoading}
           >
-            Fechar
+            Buscar
           </Button>
         </View>
-      )}
 
-      <ScrollView horizontal style={[styles.consEquipMenu, { marginBottom: 10 }]}>
-        <View style={{ marginBottom: 5 }} />
-        <EquipmentTable equipments={filter} />
-      </ScrollView>
-      <Button mode="contained" style={[styles.searchButton, { width: '100%' }]} onPress={() => router.push('/home_pages/gerenciar_equip')}>
-          Voltar
-      </Button>
-    </View>
+        {isScanning && (
+          <View style={localStyles.scannerContainer}>
+            <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+            <Button mode="outlined" style={{ marginTop: 10 }} onPress={() => setIsScanning(false)}>
+              Fechar Câmera
+            </Button>
+          </View>
+        )}
+        
+        <View style={localStyles.resultsContainer}>
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#dc3545" style={{flex: 1, justifyContent: 'center'}} />
+          ) : filter.length > 0 ? (
+            // A sua tabela para exclusão é renderizada aqui
+            <EquipmentTable equipments={filter} onRefresh={handleSearch} />
+          ) : (
+            <Text style={localStyles.errorText}>{errorMessage}</Text>
+          )}
+        </View>
+
+        <View style={localStyles.footer}>
+            <Button
+              mode="outlined"
+              style={localStyles.backButton}
+              labelStyle={localStyles.backButtonLabel}
+              onPress={() => router.push('/home_pages/gerenciar_equip')}
+            >
+              Voltar
+            </Button>
+        </View>
+    </KeyboardAvoidingView>
   );
 }
+
+const localStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  headerBox: {
+    paddingVertical: 24,
+    paddingTop: 40,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fafafa'
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  searchCard: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#f9f9f9',
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 8,
+    fontWeight: '500'
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  button: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    backgroundColor: '#dc3545' // Cor vermelha para exclusão
+  },
+  buttonLabel: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  scannerContainer: {
+    marginHorizontal: 16,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#eee'
+  },
+  resultsContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#616161'
+  },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    backgroundColor: '#fff',
+  },
+  backButton: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    borderColor: '#ccc'
+  },
+  backButtonLabel: {
+      fontSize: 17,
+      fontWeight: 'bold',
+      color: '#333'
+  }
+});

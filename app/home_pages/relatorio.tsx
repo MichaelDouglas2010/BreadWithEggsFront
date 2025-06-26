@@ -1,83 +1,180 @@
-import { useState } from 'react'
-import { View, Text, TextInput, ScrollView } from 'react-native'
-import styles from '../../components/styles'
-import { Button } from 'react-native-paper'
-import api from '../../helpers/axios'
-import { EquipmentGet } from '../../components/interfaces/equipment'
-import axios from 'axios'
-import { router } from 'expo-router'
-import EquipmentTable from '../../components/tabelas/Equipment_table_relatorio'
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  StyleSheet, 
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
+import { Button } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import api from '../../helpers/axios';
+import { EquipmentGet } from '../../components/interfaces/equipment';
+import EquipmentTableRelatorio from '../../components/tabelas/Equipment_table_relatorio';
 
 export default function RelatorioEquip() {
-
-  const [searchQuery, setSearchQuery] = useState('') 
-
-  const [filter, setFilter] = useState<EquipmentGet[]>([])
-
-  const [errorMessage, setErrorMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [equipments, setEquipments] = useState<EquipmentGet[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSearch = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
+    setErrorMessage('');
     try {
-      let response: { data: EquipmentGet[] }
-      if (searchQuery) {
-        response = await api.get(`/equipment?search=${searchQuery}`)
-        if (response.data.length > 0) {
-          setFilter(response.data)
-          setErrorMessage('')
-        } else {
-          setFilter([])
-          setErrorMessage('Equipamento inexistente')
-        }
+      const endpoint = searchQuery.trim() ? `/equipment?search=${searchQuery.trim()}` : '/equipment';
+      const response = await api.get(endpoint);
+
+      if (response.data && response.data.length > 0) {
+        setEquipments(response.data);
       } else {
-        response = await api.get('/equipment')
-        setFilter(response.data)
-        setErrorMessage('')
+        setEquipments([]);
+        setErrorMessage(searchQuery.trim() ? 'Equipamento inexistente.' : 'Nenhum equipamento cadastrado.');
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        console.error('Error response:', error.response)
-        setErrorMessage(`Erro: ${error.response.data.message || 'Erro ao buscar equipamentos'}`)
-      } else {
-        console.error('Erro na busca: ', error)
-        setErrorMessage('Erro ao buscar equipamentos')
-      }
+      console.error('Erro na busca: ', error);
+      setErrorMessage('Falha ao buscar equipamentos. Tente novamente.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+  
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.pageTitleBox}>
-        <Text style={styles.pageTitleLabel}>Consultar Relatório</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={localStyles.container}
+    >
+      <View style={localStyles.headerBox}>
+        <Text style={localStyles.headerTitle}>Consultar Relatório</Text>
       </View>
-      {/* Barra de Pesquisa */}
-      <View >
-        <Text style={{ fontSize: 16, color: 'white' }}>Descrição</Text>
+
+      <View style={localStyles.searchCard}>
+        <Text style={localStyles.inputLabel}>Descrição ou ID</Text>
         <TextInput
-          style={styles.searchInput}
-          placeholder="Insira a descrição ou ID do equip"
+          style={localStyles.searchInput}
+          placeholder="Digite aqui para buscar..."
+          placeholderTextColor="#999"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          accessibilityLabel="Campo de busca de equipamento"
+          onSubmitEditing={handleSearch}
         />
-        {/* Botão Buscar */}
-        <Button mode="contained" style={styles.searchButton} onPress={handleSearch}>
+        <Button
+          mode="contained"
+          style={localStyles.button}
+          labelStyle={localStyles.buttonLabel}
+          onPress={handleSearch}
+          loading={isLoading}
+          disabled={isLoading}
+        >
           Buscar
         </Button>
       </View>
+        
+      <View style={localStyles.resultsContainer}>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#007B83" style={{flex: 1, justifyContent: 'center'}} />
+        ) : equipments.length > 0 ? (
+          <EquipmentTableRelatorio equipments={equipments} />
+        ) : (
+          <Text style={localStyles.errorText}>{errorMessage}</Text>
+        )}
+      </View>
 
-      <ScrollView horizontal style={[styles.consEquipMenu, {marginBottom:10}]}>
-        <View style={{ marginBottom: 5 }} />
-        <EquipmentTable equipments={filter} />
-        {/* Botões ou outros conteúdos */}
-      </ScrollView>
-      <Button mode="contained" style={styles.searchButton} onPress={() => router.push('/home')}>
-        Voltar
-      </Button>
-    </View>
-  )
+      <View style={localStyles.footer}>
+          <Button
+            mode="outlined"
+            style={localStyles.backButton}
+            labelStyle={localStyles.backButtonLabel}
+            onPress={() => router.push('/home')}
+          >
+            Voltar
+          </Button>
+      </View>
+    </KeyboardAvoidingView>
+  );
 }
 
+const localStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  headerBox: {
+    paddingVertical: 24,
+    paddingTop: 40,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fafafa'
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  searchCard: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#f9f9f9',
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 8,
+    fontWeight: '500'
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  button: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    backgroundColor: '#007B83' // Cor temática para relatório
+  },
+  buttonLabel: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  resultsContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#616161'
+  },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    backgroundColor: '#fff',
+  },
+  backButton: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    borderColor: '#ccc'
+  },
+  backButtonLabel: {
+      fontSize: 17,
+      fontWeight: 'bold',
+      color: '#333'
+  }
+});

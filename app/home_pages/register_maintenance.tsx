@@ -16,15 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import api from '../../helpers/axios';
 import { EquipmentGet } from '../../components/interfaces/equipment';
-import EquipmentTable from '../../components/tabelas/Equipament_registro'; // Tabela de Registro de Uso
 import QRCodeScanner from '../../components/sensor/QRCodeScanner';
+import EquipmentTableForMaintenance from '../../components/tabelas/Equipment_register_maintenance'; 
 
-export default function EntradaSaidaEquip() {
+export default function RegisterMaintenancePage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(''); 
-  const [filter, setFilter] = useState<EquipmentGet[]>([]);
+  const [equipments, setEquipments] = useState<EquipmentGet[]>([]);
   const [errorMessage, setErrorMessage] = useState(''); 
-  const [isLoading, setIsLoading] = useState(true); // Inicia como true
+  const [isLoading, setIsLoading] = useState(true); 
   const [isScanning, setIsScanning] = useState(false); 
   const [permission, requestPermission] = useCameraPermissions(); 
 
@@ -36,9 +36,9 @@ export default function EntradaSaidaEquip() {
       const response = await api.get(endpoint);
       
       if (response.data && response.data.length > 0) {
-        setFilter(response.data);
+        setEquipments(response.data);
       } else {
-        setFilter([]);
+        setEquipments([]);
         setErrorMessage(searchQuery.trim() ? 'Equipamento inexistente.' : 'Nenhum equipamento cadastrado.');
       }
     } catch (error) {
@@ -50,14 +50,14 @@ export default function EntradaSaidaEquip() {
   };
 
   useEffect(() => {
-    handleSearch(); // Busca todos os equipamentos ao carregar a tela
+    handleSearch();
   }, []);
 
   const handleQRCodeScanned = (result: BarcodeScanningResult) => {
     if (result.data) {
       setSearchQuery(result.data);
       setIsScanning(false);
-      handleSearch(); // Inicia a busca após ler o QR Code
+      handleSearch();
     }
   };
 
@@ -76,7 +76,7 @@ export default function EntradaSaidaEquip() {
       style={localStyles.container}
     >
         <View style={localStyles.headerBox}>
-          <Text style={localStyles.headerTitle}>Registrar Uso</Text>
+          <Text style={localStyles.headerTitle}>Registrar Manutenção</Text>
         </View>
 
         <View style={localStyles.searchCard}>
@@ -115,19 +115,20 @@ export default function EntradaSaidaEquip() {
           </View>
         )}
         
-        {/* --- Área da Tabela --- */}
         <View style={localStyles.resultsContainer}>
           {isLoading ? (
             <ActivityIndicator size="large" color="#FF6F00" style={{flex: 1, justifyContent: 'center'}} />
-          ) : filter.length > 0 ? (
-            // A tabela agora pode rolar livremente aqui dentro, sem o ScrollView externo
-            <EquipmentTable equipments={filter} />
+          ) : equipments.length > 0 ? (
+            <EquipmentTableForMaintenance 
+              equipments={equipments} 
+              onRefresh={handleSearch} 
+              setIsLoading={setIsLoading} 
+            />
           ) : (
             <Text style={localStyles.errorText}>{errorMessage}</Text>
           )}
         </View>
 
-        {/* --- Rodapé --- */}
         <View style={localStyles.footer}>
             <Button
               mode="outlined"
@@ -142,7 +143,6 @@ export default function EntradaSaidaEquip() {
   );
 }
 
-// Estilos padronizados
 const localStyles = StyleSheet.create({
   container: {
     flex: 1,

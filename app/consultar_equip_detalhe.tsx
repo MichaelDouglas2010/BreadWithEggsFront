@@ -1,118 +1,165 @@
-import { useEffect, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native'
-import api from '../helpers/axios'
-import { EquipmentGet } from '../components/interfaces/equipment'
-import { router, useLocalSearchParams } from 'expo-router'
-import { Button } from 'react-native-paper'
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Button, Card, Title, Paragraph } from 'react-native-paper'; // Usando componentes do Paper para consistência
+import { Ionicons } from '@expo/vector-icons';
+import api from '../helpers/axios';
+import { EquipmentGet } from '../components/interfaces/equipment';
 
 export default function ConsultarEquipDetalhe() {
-    function formatDate(dateString: string) {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${year}-${month}-${day}, ${hours}:${minutes}`;
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const [equipment, setEquipment] = useState<EquipmentGet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Função para formatar a data de forma mais legível
+  function formatDate(dateString?: string): string {
+    if (!dateString) return 'Não informado';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Data inválida';
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'UTC' // Garante que a data não mude por causa do fuso horário
+    });
+  }
+
+  // Função para retornar a cor e o ícone correspondente ao status
+  const getStatusInfo = (status?: string) => {
+    switch (status) {
+      case 'ativo':
+        return { color: '#28a745', icon: 'checkmark-circle' as const };
+      case 'inativo':
+        return { color: '#dc3545', icon: 'close-circle' as const };
+      case 'emprestado':
+        return { color: '#ffc107', icon: 'time' as const };
+      default:
+        return { color: '#6c757d', icon: 'help-circle' as const };
     }
+  };
 
-    const [equipment, setEquipment] = useState<EquipmentGet>()
-    const { id } = useLocalSearchParams()
+  useEffect(() => {
+    if (id && typeof id === 'string') {
+      setIsLoading(true);
+      api.get(`/equipment/${id}`)
+        .then((response) => setEquipment(response.data))
+        .catch(() => Alert.alert('Erro', 'Não foi possível carregar os detalhes do equipamento.'))
+        .finally(() => setIsLoading(false));
+    } else {
+      Alert.alert('Erro', 'ID do equipamento não fornecido.');
+      router.back();
+    }
+  }, [id]);
 
-    const getStatusColor = (status?: string) => {
-        switch (status) {
-            case 'ativo':
-                return 'green';
-            case 'inativo':
-                return 'red';
-            case 'emprestado':
-                return 'orange';
-            default:
-                return 'gray';
-        }
-    };
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#FF6F00" style={{ flex: 1, justifyContent: 'center' }} />;
+  }
 
-    useEffect(() => {
-        api.get('/equipment/' + id)
-            .then((response) => setEquipment(response.data))
-            .catch(() => Alert.alert('Erro', 'Não foi possível carregar o equipamento.'));
-    }, [id])
-
+  if (!equipment) {
     return (
-        <View style={localStyles.container}>
-            <View style={localStyles.card}>
-                <Text style={localStyles.title}>{equipment?.description || 'Detalhes do Equipamento'}</Text>
-                <Text style={localStyles.label}>Descrição:</Text>
-                <Text style={localStyles.value}>{equipment?.description}</Text>
-                <Text style={localStyles.label}>Marca:</Text>
-                <Text style={localStyles.value}>{equipment?.marca}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                    <Text style={localStyles.label}>Status: </Text>
-                    <Text style={[localStyles.value, { color: getStatusColor(equipment?.status), fontWeight: 'bold' }]}>
-                        {equipment?.status
-                            ? equipment.status.charAt(0).toUpperCase() + equipment.status.slice(1).toLowerCase()
-                            : ''}
-                    </Text>
-                </View>
-                <Text style={localStyles.label}>Data de Registro:</Text>
-                <Text style={localStyles.value}>{equipment ? formatDate(equipment?.dataEntrada) : ''}</Text>
-                <Text style={localStyles.label}>QrCode:</Text>
-                <Text style={localStyles.value}>{equipment?.qrCodeData}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
-                <Button
-                    mode="contained"
-                    style={[localStyles.button, { backgroundColor: '#007B83' }]}
-                    labelStyle={{ color: '#222' }}
-                    onPress={() => router.back()}
-                >
-                    Voltar
-                </Button>
-            </View>
-        </View>
-    )
+      <View style={localStyles.container}>
+        <Text style={localStyles.errorText}>Equipamento não encontrado.</Text>
+        <Button mode="outlined" onPress={() => router.back()}>Voltar</Button>
+      </View>
+    );
+  }
+  
+  const statusInfo = getStatusInfo(equipment.status);
+
+  return (
+    <ScrollView contentContainerStyle={localStyles.container}>
+      <Card style={localStyles.card}>
+        <Card.Content>
+          <Title style={localStyles.title}>{equipment.description}</Title>
+          
+          <View style={localStyles.infoRow}>
+            <Ionicons name="pricetag-outline" size={20} color="#555" />
+            <Text style={localStyles.label}>Marca:</Text>
+            <Text style={localStyles.value}>{equipment.marca}</Text>
+          </View>
+          
+          <View style={localStyles.infoRow}>
+            <Ionicons name={statusInfo.icon} size={20} color={statusInfo.color} />
+            <Text style={localStyles.label}>Status:</Text>
+            <Text style={[localStyles.value, { color: statusInfo.color, fontWeight: 'bold' }]}>
+              {equipment.status.charAt(0).toUpperCase() + equipment.status.slice(1)}
+            </Text>
+          </View>
+
+          <View style={localStyles.infoRow}>
+            <Ionicons name="calendar-outline" size={20} color="#555" />
+            <Text style={localStyles.label}>Data de Registro:</Text>
+            <Text style={localStyles.value}>{formatDate(equipment.dataEntrada)}</Text>
+          </View>
+
+          <View style={localStyles.infoRow}>
+            <Ionicons name="qr-code-outline" size={20} color="#555" />
+            <Text style={localStyles.label}>QR Code:</Text>
+            <Text style={localStyles.value}>{equipment.qrCodeData || 'Não definido'}</Text>
+          </View>
+
+        </Card.Content>
+        <Card.Actions>
+          <Button
+            mode="outlined"
+            onPress={() => router.back()}
+            style={localStyles.button}
+          >
+            Voltar
+          </Button>
+        </Card.Actions>
+      </Card>
+    </ScrollView>
+  );
 }
 
 const localStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f7f7f7',
-        padding: 20,
-        justifyContent: 'center',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: 12,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-        marginBottom: 30,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#111', 
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    label: {
-        fontSize: 16,
-        color: '#111', // preto
-        marginTop: 10,
-        fontWeight: '600',
-    },
-    value: {
-        fontSize: 18,
-        color: '#111', // preto
-        marginBottom: 5,
-    },
-    button: {
-        flex: 1,
-        marginHorizontal: 5,
-        borderRadius: 8,
-        paddingVertical: 8,
-    },
-})
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#f4f6f8',
+    padding: 16,
+    justifyContent: 'center',
+  },
+  card: {
+    borderRadius: 12,
+    elevation: 3,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#212529',
+    textAlign: 'center',
+    marginBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingBottom: 16,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    color: '#6c757d',
+    marginLeft: 8,
+    fontWeight: '600',
+  },
+  value: {
+    fontSize: 16,
+    color: '#212529',
+    marginLeft: 4,
+  },
+  button: {
+    flex: 1,
+    margin: 8,
+    borderRadius: 8,
+  },
+  errorText: {
+      textAlign: 'center',
+      fontSize: 16,
+      color: '#dc3545',
+      marginBottom: 20,
+  }
+});

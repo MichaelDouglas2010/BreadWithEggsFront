@@ -1,38 +1,64 @@
-import { Text, View, StyleSheet } from 'react-native'
-import { Button, TextInput } from 'react-native-paper'
-import { useAuth } from '../context/auth'
-import Logo from '../components/handle-images/logo'
-import styles from '../components/styles'
-import { Link, useFocusEffect } from 'expo-router'
-import React from 'react'
+import React, { useState } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
+import { useAuth } from '../context/auth';
+import Logo from '../components/handle-images/logo';
+import styles from '../components/styles';
+import { Link } from 'expo-router';
 
 export default function Login() {
-  const { user, handleLogin, setUser } = useAuth()
-  useFocusEffect(
-    React.useCallback(() => {
-      setUser({_id:'', email: '', password: '', name: '', team: '' })
-    }, [])
-  )
+  // CORREÇÃO: Usa a nova função 'signIn' e o estado 'isLoading' do contexto
+  const { signIn, isLoading } = useAuth();
+  
+  // CORREÇÃO: Mantém o estado dos campos de forma local
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Função que é chamada ao clicar no botão de login
+  const handleLogin = () => {
+    // Passa as credenciais para a função de signIn do contexto
+    signIn({ email, password });
+  };
 
   return (
     <View style={styles.container}>
-
       <Logo />
 
       <View>
-        <Text style={styles.loginLabel}>Usuário</Text>
-        <TextInput label="Usuário" style={styles.loginInput} onChangeText={text => setUser({ ...user, email: text })} />
+        <Text style={styles.loginLabel}>E-mail</Text>
+        <TextInput 
+          label="E-mail" 
+          style={styles.loginInput} 
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
       </View>
 
       <View>
         <Text style={styles.loginLabel}>Senha</Text>
-        <TextInput label="Senha" secureTextEntry={true} style={styles.loginInput} onChangeText={text => setUser({ ...user, password: text })} />
+        <TextInput 
+          label="Senha" 
+          secureTextEntry={true} 
+          style={styles.loginInput} 
+          value={password}
+          onChangeText={setPassword} 
+        />
       </View>
 
-      <Button mode="contained" style={styles.loginButton} onPress={handleLogin}>Login</Button>
+      <Button 
+        mode="contained" 
+        style={styles.loginButton} 
+        onPress={handleLogin}
+        loading={isLoading}
+        disabled={isLoading}
+      >
+        Login
+      </Button>
 
-      <Link href={'recover-pw'} style={[styles.loginLabel, { alignSelf: 'center' }]}>
-        <Text>Recuperar senha</Text>
+      <Link href={'/recover-pw'} style={[styles.loginLabel, { alignSelf: 'center' }]}>
+        <Text>Esqueci a minha senha</Text>
       </Link>
 
       <Link href={'/cadastrar_usuario'} style={{ alignSelf: 'center', marginTop: 24 }}>
@@ -44,7 +70,6 @@ export default function Login() {
           Criar nova conta
         </Button>
       </Link>
-
     </View>
-  )
+  );
 }

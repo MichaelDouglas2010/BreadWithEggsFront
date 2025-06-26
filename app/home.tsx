@@ -1,224 +1,256 @@
-import { useState } from 'react';
-import { View, Text, ScrollView, Modal, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { 
+  View, 
+  FlatList, // ALTERAÇÃO: Usando FlatList em vez de ScrollView para a grelha
+  Modal, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  ActivityIndicator,
+  SafeAreaView 
+} from 'react-native';
 import { useAuth } from '../context/auth';
-import styles from '../components/styles';
-import { Button } from 'react-native-paper';
-import { router } from 'expo-router';
+import { Button, Text as PaperText, Avatar } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import ProfileImage from '../components/handle-images/profile-image';
 import ChatScreen from '../components/chatboot/chat_boot';
 
+// Estrutura de dados para os itens do menu, facilitando a manutenção
+const menuItems = [
+  { 
+    title: 'Consultar', 
+    icon: 'magnify', 
+    route: '/home_pages/consultar_equip',
+    accessibilityLabel: 'Consultar Equipamento'
+  },
+  { 
+    title: 'Registrar Uso', 
+    icon: 'swap-horizontal-bold', 
+    route: '/home_pages/registrar_uso_equip',
+    accessibilityLabel: 'Registrar Uso de Equipamento'
+  },
+  { 
+    title: 'Registrar Manutenção', 
+    icon: 'tools', 
+    route: '/home_pages/register_maintenance',
+    accessibilityLabel: 'Registrar Manutenção de Equipamento'
+  },
+  { 
+    title: 'Gerenciar', 
+    icon: 'cog-outline', 
+    route: '/home_pages/gerenciar_equip',
+    accessibilityLabel: 'Gerenciar Equipamentos'
+  },
+  { 
+    title: 'Relatórios de Uso', 
+    icon: 'chart-bar', 
+    route: '/home_pages/relatorio',
+    accessibilityLabel: 'Relatórios de Uso'
+  },
+  { 
+    title: 'Relatórios de Manutenção', 
+    icon: 'file-document-outline', 
+    route: '/home_pages/maintenance',
+    accessibilityLabel: 'Relatórios de Manutenções'
+  },
+  { 
+    title: 'Sobre', 
+    icon: 'information-outline', 
+    route: '/home_pages/about',
+    accessibilityLabel: 'Sobre o projeto'
+  },
+];
+
 export default function Home() {
-  const { user, signOut } = useAuth(); // <-- agora usando signOut
+  const router = useRouter();
+  const { user, signOut } = useAuth(); 
   const [isChatVisible, setChatVisible] = useState(false);
 
-  // Função para sair da conta
   const handleSignOut = () => {
     Alert.alert(
       'Sair',
       'Tem certeza que deseja sair?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Sair',
-          style: 'destructive',
-          onPress: () => {
-            if (signOut) signOut(); // faz logout
-            router.replace('/'); // volta para tela de login
-          },
-        },
+        { text: 'Sair', style: 'destructive', onPress: signOut },
       ]
     );
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Cabeçalho do usuário */}
-      <View style={styles.profileBox}>
-        <ProfileImage />
-        <View style={styles.profileDetails}>
-          <Text style={styles.profileName} accessibilityRole="header">{user.name}</Text>
-          <Text style={styles.profileTeam}>{user.team}</Text>
-        </View>
+  if (!user) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF6F00" />
       </View>
+    );
+  }
 
-      {/* Menu principal */}
-      <ScrollView style={styles.homeMenu} contentContainerStyle={{ paddingVertical: 20 }}>
-        <Text style={localStyles.sectionTitle}>Menu Principal</Text>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/consultar_equip')}
-          accessibilityLabel="Consultar Equipamento"
-        >
-          Consultar Equipamento
-        </Button>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/registrar_uso_equip')}
-          accessibilityLabel="Registrar Uso de Equipamento"
-        >
-          Registrar Uso de Equipamento
-        </Button>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/gerenciar_equip')}
-          accessibilityLabel="Gerenciar Equipamentos"
-        >
-          Gerenciar Equipamentos
-        </Button>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/relatorio')}
-          accessibilityLabel="Relatórios"
-        >
-          Relatórios
-        </Button>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/camera')}
-          accessibilityLabel="Câmera"
-        >
-          Câmera
-        </Button>
-        <Button
-          mode="contained"
-          style={styles.homeButton}
-          labelStyle={localStyles.buttonLabel}
-          onPress={() => router.push('/home_pages/about')}
-          accessibilityLabel="Sobre"
-        >
-          Sobre
-        </Button>
-        <Button
-          mode="contained"
-          style={localStyles.signOutButton}
-          labelStyle={localStyles.signOutLabel}
-          onPress={handleSignOut}
-          accessibilityLabel="Sair da conta"
-        >
-          Sair da Conta
-        </Button>
-      </ScrollView>
+  // Componente que renderiza cada item do menu na FlatList
+  const renderMenuItem = ({ item }: { item: typeof menuItems[0] }) => (
+    <TouchableOpacity 
+      style={styles.menuItem}
+      onPress={() => router.push(item.route)}
+      accessibilityLabel={item.accessibilityLabel}
+    >
+      <Avatar.Icon size={48} icon={item.icon} style={styles.menuIcon} />
+      <PaperText variant="labelMedium" style={styles.menuLabel} numberOfLines={2}>{item.title}</PaperText>
+    </TouchableOpacity>
+  );
 
-      {/* Botão flutuante para abrir o chat */}
-      <TouchableOpacity
-        style={floatingStyles.chatButton}
-        onPress={() => setChatVisible(true)}
-        accessibilityLabel="Abrir chat de suporte"
-      >
-        <Text style={floatingStyles.chatButtonText}>💬</Text>
-      </TouchableOpacity>
-
-      {/* Modal para exibir o chat */}
-      <Modal
-        visible={isChatVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setChatVisible(false)}
-      >
-        <View style={floatingStyles.modalContainer}>
-          <ChatScreen />
-          <Button
-            mode="contained"
-            style={floatingStyles.closeButton}
-            onPress={() => setChatVisible(false)}
-            accessibilityLabel="Fechar chat"
-          >
-            Fechar
-          </Button>
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Cabeçalho do utilizador com design melhorado */}
+        <View style={styles.profileBox}>
+          <ProfileImage />
+          <View style={styles.profileDetails}>
+            <PaperText variant="titleMedium" style={styles.profileName}>{user.name}</PaperText>
+            <PaperText variant="bodySmall" style={styles.profileTeam}>{user.team}</PaperText>
+          </View>
+          <TouchableOpacity onPress={handleSignOut} style={styles.signOutIcon}>
+              <Ionicons name="log-out-outline" size={28} color="#FF6F00" />
+          </TouchableOpacity>
         </View>
-      </Modal>
-    </View>
+
+        {/* Menu principal agora usa FlatList para uma grelha responsiva */}
+        <FlatList
+          data={menuItems}
+          renderItem={renderMenuItem}
+          keyExtractor={(item) => item.title}
+          numColumns={2} // CRÍTICO: Cria a grelha de duas colunas
+          contentContainerStyle={styles.menuContainer}
+          ListHeaderComponent={<PaperText variant="titleLarge" style={styles.sectionTitle}>Menu Principal</PaperText>}
+        />
+        
+        {/* Botão flutuante para o chat */}
+        <TouchableOpacity
+          style={styles.chatButton}
+          onPress={() => setChatVisible(true)}
+          accessibilityLabel="Abrir chat de suporte"
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={28} color="#fff" />
+        </TouchableOpacity>
+
+        {/* Modal do chat */}
+        <Modal
+          visible={isChatVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setChatVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+                <ChatScreen />
+                <Button
+                    mode="outlined"
+                    style={styles.closeButton}
+                    onPress={() => setChatVisible(false)}
+                >
+                    Fechar
+                </Button>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 }
 
-const localStyles = StyleSheet.create({
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    marginBottom: 10,
-    marginLeft: 5,
-    textAlign: 'center',
-  },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 0.2,
-  },
-  signOutButton: {
-    marginTop: 18,
-    marginBottom: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#B0BEC5',
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
     backgroundColor: '#fff',
-    alignSelf: 'center',
+  },
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
-    width: '85%',
-    height: 50,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  signOutLabel: {
-    color: '#FF6F00',
+  profileBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 20,
+    backgroundColor: '#fafafa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  profileDetails: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  profileName: {
     fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 0.2,
   },
-});
-
-const floatingStyles = StyleSheet.create({
+  profileTeam: {
+    color: '#666',
+  },
+  signOutIcon: {
+    padding: 8,
+  },
+  menuContainer: {
+    padding: 16,
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333'
+  },
+  // O menuGrid foi removido, pois a FlatList gere a grelha
+  menuItem: {
+    flex: 1, // Permite que os itens preencham o espaço da coluna
+    margin: 8, // Espaçamento entre os itens
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+  },
+  menuIcon: {
+    backgroundColor: '#ffe0b2',
+    marginBottom: 12,
+  },
+  menuLabel: {
+    textAlign: 'center',
+    color: '#333',
+    fontWeight: '600'
+  },
   chatButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 24,
+    right: 24,
     backgroundColor: '#007B83',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    borderWidth: 2,
-    borderColor: '#005F63',
-  },
-  chatButtonText: {
-    color: '#F1FAEE',
-    fontSize: 24,
-    fontWeight: 'bold',
+    elevation: 8,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#E8F0F2',
-    padding: 10,
     justifyContent: 'flex-end',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderWidth: 1,
-    borderColor: '#A8DADC',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  modalContent: {
+      height: '85%',
+      backgroundColor: '#E8F0F2',
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 16,
   },
   closeButton: {
-    marginTop: 10,
-    backgroundColor: '#007B83',
-    borderWidth: 2,
-    borderColor: '#005F63',
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
+    marginTop: 16,
+    borderColor: '#007B83',
+  }
 });
-
