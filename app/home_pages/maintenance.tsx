@@ -236,6 +236,9 @@ const pageStyles = StyleSheet.create({
     backButton: {
     borderRadius: 10,
     paddingVertical: 8,
-    borderColor: '#ccc'
+    borderColor: '#ccc',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#333'
   }
 });
