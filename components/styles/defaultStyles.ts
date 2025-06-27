@@ -65,6 +65,7 @@ const defaultStyles = StyleSheet.create({
     padding: 10,
     marginLeft: 10,
   },
+  
   qrCodeIcon: {
     marginLeft: 5,
     color: '#FFFFFF',

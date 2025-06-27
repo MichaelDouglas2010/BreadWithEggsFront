@@ -7,23 +7,18 @@ import styles from '../components/styles';
 import { Link } from 'expo-router';
 
 export default function Login() {
-  // CORREÇÃO: Usa a nova função 'signIn' e o estado 'isLoading' do contexto
   const { signIn, isLoading } = useAuth();
   
-  // CORREÇÃO: Mantém o estado dos campos de forma local
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Função que é chamada ao clicar no botão de login
   const handleLogin = () => {
-    // Passa as credenciais para a função de signIn do contexto
     signIn({ email, password });
   };
 
   return (
     <View style={styles.container}>
       <Logo />
-
       <View>
         <Text style={styles.loginLabel}>E-mail</Text>
         <TextInput 

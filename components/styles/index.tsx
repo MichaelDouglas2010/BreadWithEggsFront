@@ -179,6 +179,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 4,
   },
+    headerSubtitle: {
+    fontSize: 15,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
       homeButton: {
     marginTop: 5,
     marginBottom: 5,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert
+  Alert,
+  RefreshControl,
+  ScrollView
 } from 'react-native';
+import { FlatList as GestureFlatList } from 'react-native-gesture-handler';
 import { Button } from 'react-native-paper';
 import { useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +20,7 @@ import { useRouter } from 'expo-router';
 import api from '../../helpers/axios';
 import { EquipmentGet } from '../../components/interfaces/equipment';
 import QRCodeScanner from '../../components/sensor/QRCodeScanner';
+// Verifique se o caminho para a sua tabela de manutenção está correto
 import EquipmentTableForMaintenance from '../../components/tabelas/Equipment_register_maintenance'; 
 
 export default function RegisterMaintenancePage() {
@@ -26,10 +30,11 @@ export default function RegisterMaintenancePage() {
   const [errorMessage, setErrorMessage] = useState(''); 
   const [isLoading, setIsLoading] = useState(true); 
   const [isScanning, setIsScanning] = useState(false); 
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [permission, requestPermission] = useCameraPermissions(); 
 
-  const handleSearch = async () => {
-    setIsLoading(true);
+  const handleSearch = useCallback(async () => {
+    if (!isRefreshing) setIsLoading(true);
     setErrorMessage('');
     try {
       const endpoint = searchQuery.trim() ? `/equipment?search=${searchQuery.trim()}` : '/equipment';
@@ -46,8 +51,9 @@ export default function RegisterMaintenancePage() {
       setErrorMessage('Falha ao buscar equipamentos. Tente novamente.');
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
-  };
+  }, [searchQuery, isRefreshing]);
 
   useEffect(() => {
     handleSearch();
@@ -60,6 +66,34 @@ export default function RegisterMaintenancePage() {
       handleSearch();
     }
   };
+  
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setSearchQuery(''); // Limpa a busca ao refrescar
+    // O useEffect [handleSearch] será acionado automaticamente se a dependência mudar,
+    // mas chamamos diretamente para garantir a atualização.
+    fetchEquipmentsAfterRefresh();
+  }, []);
+
+  const fetchEquipmentsAfterRefresh = async () => {
+      // Esta função é uma cópia da lógica de busca para o onRefresh
+      try {
+        const response = await api.get('/equipment');
+        if (response.data && response.data.length > 0) {
+            setEquipments(response.data);
+            setErrorMessage('');
+        } else {
+            setEquipments([]);
+            setErrorMessage('Nenhum equipamento cadastrado.');
+        }
+    } catch (error) {
+        console.error('Erro na busca (refresh): ', error);
+        setErrorMessage('Falha ao buscar equipamentos.');
+    } finally {
+        setIsRefreshing(false);
+    }
+  }
+
 
   const handleQRCodeButtonPress = async () => {
     const { status } = await requestPermission();
@@ -82,25 +116,24 @@ export default function RegisterMaintenancePage() {
         <View style={localStyles.searchCard}>
           <Text style={localStyles.inputLabel}>Descrição ou ID</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TextInput
-              style={[localStyles.searchInput, { flex: 1 }]}
-              placeholder="Digite para buscar..."
-              placeholderTextColor="#999"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-            />
-            <TouchableOpacity onPress={handleQRCodeButtonPress}>
-              <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
-            </TouchableOpacity>
+              <TextInput
+                style={[localStyles.searchInput, { flex: 1 }]}
+                placeholder="Digite para buscar..."
+                placeholderTextColor="#999"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onSubmitEditing={handleSearch}
+              />
+              <TouchableOpacity onPress={handleQRCodeButtonPress}>
+                <Ionicons name="qr-code-outline" size={30} color="#FF6F00" style={{ marginLeft: 10 }} />
+              </TouchableOpacity>
           </View>
           <Button
             mode="contained"
             style={localStyles.button}
             labelStyle={localStyles.buttonLabel}
             onPress={handleSearch}
-            loading={isLoading}
-            disabled={isLoading}
+            loading={isLoading && !isRefreshing}
           >
             Buscar
           </Button>
@@ -116,16 +149,26 @@ export default function RegisterMaintenancePage() {
         )}
         
         <View style={localStyles.resultsContainer}>
-          {isLoading ? (
+          {isLoading && !isRefreshing ? (
             <ActivityIndicator size="large" color="#FF6F00" style={{flex: 1, justifyContent: 'center'}} />
-          ) : equipments.length > 0 ? (
-            <EquipmentTableForMaintenance 
-              equipments={equipments} 
-              onRefresh={handleSearch} 
-              setIsLoading={setIsLoading} 
-            />
           ) : (
-            <Text style={localStyles.errorText}>{errorMessage}</Text>
+            <GestureFlatList
+              data={[{ key: 'table-wrapper' }]}
+              keyExtractor={item => item.key}
+              renderItem={() => (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <EquipmentTableForMaintenance 
+                    equipments={equipments} 
+                    onRefresh={onRefresh} 
+                    setIsLoading={setIsLoading} 
+                  />
+                </ScrollView>
+              )}
+              ListEmptyComponent={<Text style={localStyles.errorText}>{errorMessage}</Text>}
+              refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#ffc107']}/>
+              }
+            />
           )}
         </View>
 
@@ -203,7 +246,6 @@ const localStyles = StyleSheet.create({
   },
   resultsContainer: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   errorText: {
     textAlign: 'center',

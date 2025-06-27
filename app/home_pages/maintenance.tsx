@@ -1,81 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
   TextInput, 
   StyleSheet, 
-  ActivityIndicator,
+  ActivityIndicator, 
+  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
   RefreshControl
 } from 'react-native';
 import { FlatList as GestureFlatList } from 'react-native-gesture-handler';
 import { Button } from 'react-native-paper';
+import { useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import api from '../../helpers/axios';
 import { EquipmentGet } from '../../components/interfaces/equipment';
-// Verifique se o nome do componente da tabela está correto
+import QRCodeScanner from '../../components/sensor/QRCodeScanner';
+// Verifique se o caminho para a sua tabela de manutenção está correto
 import EquipmentTableMaintenance from '../../components/tabelas/Equipment_maintenance'; 
 
 export default function MaintenanceListPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [equipments, setEquipments] = useState<EquipmentGet[]>([]);
-  const [filteredEquipments, setFilteredEquipments] = useState<EquipmentGet[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
 
-  const fetchEquipments = () => {
-    // Só mostra o loading inicial na primeira vez, não no refresh
-    !isRefreshing && setIsLoading(true);
+  const handleSearch = useCallback(async () => {
+    if (!isRefreshing) setIsLoading(true);
     setErrorMessage('');
-    api.get('/equipment')
-      .then(response => {
+    try {
+      // A busca agora é sempre feita na API para ter os dados mais atualizados
+      const endpoint = searchQuery.trim() ? `/equipment?search=${searchQuery.trim()}` : '/equipment';
+      const response = await api.get(endpoint);
+      
+      if (response.data && response.data.length > 0) {
         setEquipments(response.data);
-        setFilteredEquipments(response.data); // Inicialmente, a lista filtrada é a lista completa
-        if (response.data.length === 0) {
-          setErrorMessage('Nenhum equipamento encontrado.');
-        }
-      })
-      .catch(error => {
-        console.error("Erro ao buscar equipamentos:", error);
-        setErrorMessage('Falha ao carregar equipamentos. Tente novamente.');
-      })
-      .finally(() => {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      });
-  };
+      } else {
+        setEquipments([]);
+        setErrorMessage(searchQuery.trim() ? 'Nenhum equipamento corresponde à busca.' : 'Nenhum equipamento encontrado.');
+      }
+    } catch (error) {
+      console.error("Erro ao buscar equipamentos:", error);
+      setErrorMessage('Falha ao carregar equipamentos. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [searchQuery, isRefreshing]);
 
   useEffect(() => {
     fetchEquipments();
   }, []);
+
+  const fetchEquipments = () => {
+    // Função dedicada para o carregamento inicial e o refresh
+    setSearchQuery(''); // Limpa a busca
+    handleSearch();
+  };
   
-  // A busca agora é feita localmente na lista já carregada
-  const handleSearch = () => {
-    if (!searchQuery.trim()) {
-        setFilteredEquipments(equipments); // Se a busca for vazia, mostra todos
-        setErrorMessage('');
-        return;
-    }
-    const filtered = equipments.filter(equip => 
-        (equip.description?.toLowerCase().includes(searchQuery.toLowerCase())) || 
-        (equip.marca?.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-    setFilteredEquipments(filtered);
-    if(filtered.length === 0) {
-        setErrorMessage('Nenhum equipamento corresponde à busca.');
-    } else {
-        setErrorMessage('');
+  const handleQRCodeScanned = (result: BarcodeScanningResult) => {
+    if (result.data) {
+      setSearchQuery(result.data);
+      setIsScanning(false);
+      // Inicia a busca automaticamente após ler o QR Code
+      handleSearch(); 
     }
   };
 
-  const onRefresh = () => {
+  const handleQRCodeButtonPress = async () => {
+    const { status } = await requestPermission();
+    if (status !== 'granted') {
+      Alert.alert('Permissão Negada', 'A permissão da câmera é necessária para escanear QR Code.');
+      return;
+    }
+    setIsScanning(true);
+  };
+  
+  const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    setSearchQuery(''); // Limpa a busca ao refrescar
     fetchEquipments();
-  }
+  }, []);
 
   return (
     <KeyboardAvoidingView 
@@ -88,29 +99,53 @@ export default function MaintenanceListPage() {
 
       <View style={pageStyles.searchCard}>
         <Text style={pageStyles.inputLabel}>Buscar Equipamento</Text>
-        <TextInput
-          style={pageStyles.searchInput}
-          placeholder="Filtrar por descrição ou marca..."
-          placeholderTextColor="#888"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              style={[pageStyles.searchInput, { flex: 1 }]}
+              placeholder="Digite a descrição ou ID..."
+              placeholderTextColor="#888"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearch}
+            />
+            <TouchableOpacity onPress={handleQRCodeButtonPress}>
+              <Ionicons name="qr-code-outline" size={30} color="#ffc107" style={{ marginLeft: 10 }} />
+            </TouchableOpacity>
+        </View>
+        <Button 
+            mode="contained" 
+            style={pageStyles.searchButton}
+            labelStyle={{ color: '#212529', fontWeight: 'bold' }} // Estilo do texto do botão
+            onPress={handleSearch}
+            loading={isLoading && !isRefreshing}
+            disabled={isLoading}
+        >
+            Buscar
+        </Button>
       </View>
 
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#ffc107" style={{ marginTop: 50 }} />
+       {isScanning && (
+          <View style={pageStyles.scannerContainer}>
+            <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} />
+            <Button mode="outlined" style={{ marginTop: 10 }} onPress={() => setIsScanning(false)}>
+              Fechar Câmera
+            </Button>
+          </View>
+        )}
+
+      {isLoading && !isRefreshing ? (
+        <ActivityIndicator size="large" color="#ffc107" style={{ flex: 1, justifyContent: 'center' }} />
       ) : (
         <GestureFlatList
-            style={pageStyles.listStyle}
-            contentContainerStyle={pageStyles.listContentContainer}
-            data={[{ key: 'table' }]} // Usamos um item falso para renderizar a tabela dentro da FlatList
-            renderItem={() => <EquipmentTableMaintenance equipments={filteredEquipments} />}
-            keyExtractor={item => item.key}
-            ListEmptyComponent={<Text style={pageStyles.errorText}>{errorMessage}</Text>}
-            refreshControl={
-              <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#ffc107']}/>
-            }
+          style={pageStyles.listStyle}
+          contentContainerStyle={pageStyles.listContentContainer}
+          data={equipments.length > 0 ? [{ key: 'table' }] : []}
+          renderItem={() => <EquipmentTableMaintenance equipments={equipments} />}
+          keyExtractor={item => item.key}
+          ListEmptyComponent={<Text style={pageStyles.errorText}>{errorMessage}</Text>}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#ffc107']}/>
+          }
         />
       )}
       
@@ -161,19 +196,34 @@ const pageStyles = StyleSheet.create({
       borderRadius: 8, 
       borderWidth: 1, 
       borderColor: '#dee2e6', 
-      marginBottom: 10, 
       fontSize: 16 
+    },
+    searchButton: {
+        marginTop: 10,
+        borderRadius: 8,
+        paddingVertical: 4,
+        backgroundColor: '#ffc107', // Fundo amarelo
+    },
+    scannerContainer: {
+        margin: 16,
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#eee'
     },
     listStyle: {
         flex: 1,
     },
     listContentContainer: {
         paddingHorizontal: 16,
-        paddingBottom: 16
+        paddingBottom: 16,
+        flexGrow: 1,
     },
     errorText: {
+        flex: 1,
         textAlign: 'center',
-        marginTop: 50,
+        textAlignVertical: 'center',
         fontSize: 16,
         color: '#6c757d',
     },
@@ -183,9 +233,12 @@ const pageStyles = StyleSheet.create({
         borderColor: '#e9ecef',
         backgroundColor: '#fff'
     },
-    backButton: { 
-      borderColor: '#6c757d', 
-      borderRadius: 8,
-      paddingVertical: 4
-    }
+    backButton: {
+    borderRadius: 10,
+    paddingVertical: 8,
+    borderColor: '#ccc',
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#333'
+  }
 });
