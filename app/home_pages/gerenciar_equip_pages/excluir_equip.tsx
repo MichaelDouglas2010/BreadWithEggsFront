@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -8,37 +8,42 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert
+  Alert,
+  RefreshControl,
+  ScrollView
 } from 'react-native';
+import { FlatList as GestureFlatList } from 'react-native-gesture-handler';
 import { Button } from 'react-native-paper';
 import { useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import api from '../../../helpers/axios';
 import { EquipmentGet } from '../../../components/interfaces/equipment';
-import EquipmentTable from '../../../components/tabelas/Equipment_table_delete'; // Tabela para exclusão
 import QRCodeScanner from '../../../components/sensor/QRCodeScanner';
+// Verifique se o caminho para a sua tabela de exclusão está correto
+import EquipmentTableDelete from '../../../components/tabelas/Equipment_table_delete';
 
 export default function ExcluirEquip() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<EquipmentGet[]>([]);
+  const [equipments, setEquipments] = useState<EquipmentGet[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
-  const handleSearch = async () => {
-    setIsLoading(true);
+  const handleSearch = useCallback(async () => {
+    if (!isRefreshing) setIsLoading(true);
     setErrorMessage('');
     try {
       const endpoint = searchQuery.trim() ? `/equipment?search=${searchQuery.trim()}` : '/equipment';
       const response = await api.get(endpoint);
-
+      
       if (response.data && response.data.length > 0) {
-        setFilter(response.data);
+        setEquipments(response.data);
       } else {
-        setFilter([]);
+        setEquipments([]);
         setErrorMessage(searchQuery.trim() ? 'Equipamento inexistente.' : 'Nenhum equipamento cadastrado.');
       }
     } catch (error) {
@@ -46,9 +51,10 @@ export default function ExcluirEquip() {
       setErrorMessage('Falha ao buscar equipamentos. Tente novamente.');
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
-  };
-  
+  }, [searchQuery, isRefreshing]);
+
   useEffect(() => {
     handleSearch();
   }, []);
@@ -61,9 +67,15 @@ export default function ExcluirEquip() {
     }
   };
   
+  const onRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setSearchQuery('');
+    handleSearch();
+  }, []);
+
   const handleQRCodeButtonPress = async () => {
-    const response = await requestPermission();
-    if (!response.granted) {
+    const { status } = await requestPermission();
+    if (status !== 'granted') {
       Alert.alert('Permissão Negada', 'A permissão da câmera é necessária para escanear QR Code.');
       return;
     }
@@ -82,25 +94,24 @@ export default function ExcluirEquip() {
         <View style={localStyles.searchCard}>
           <Text style={localStyles.inputLabel}>Descrição ou ID</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TextInput
-              style={[localStyles.searchInput, { flex: 1 }]}
-              placeholder="Digite para buscar..."
-              placeholderTextColor="#999"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-            />
-            <TouchableOpacity onPress={handleQRCodeButtonPress}>
-              <Ionicons name="qr-code-outline" size={30} color="#dc3545" style={{ marginLeft: 10 }} />
-            </TouchableOpacity>
+              <TextInput
+                style={[localStyles.searchInput, { flex: 1 }]}
+                placeholder="Digite para buscar..."
+                placeholderTextColor="#999"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                onSubmitEditing={handleSearch}
+              />
+              <TouchableOpacity onPress={handleQRCodeButtonPress}>
+                <Ionicons name="qr-code-outline" size={30} color="#dc3545" style={{ marginLeft: 10 }} />
+              </TouchableOpacity>
           </View>
           <Button
             mode="contained"
             style={localStyles.button}
             labelStyle={localStyles.buttonLabel}
             onPress={handleSearch}
-            loading={isLoading}
-            disabled={isLoading}
+            loading={isLoading && !isRefreshing}
           >
             Buscar
           </Button>
@@ -115,14 +126,27 @@ export default function ExcluirEquip() {
           </View>
         )}
         
+        {/* Utilizando a estrutura de GestureFlatList */}
         <View style={localStyles.resultsContainer}>
-          {isLoading ? (
+          {isLoading && !isRefreshing? (
             <ActivityIndicator size="large" color="#dc3545" style={{flex: 1, justifyContent: 'center'}} />
-          ) : filter.length > 0 ? (
-            // A sua tabela para exclusão é renderizada aqui
-            <EquipmentTable equipments={filter} onRefresh={handleSearch} />
           ) : (
-            <Text style={localStyles.errorText}>{errorMessage}</Text>
+            <GestureFlatList
+              data={equipments.length > 0 ? [{ key: 'table-wrapper' }] : []}
+              keyExtractor={item => item.key}
+              renderItem={() => (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal: 16}}>
+                  <EquipmentTableDelete 
+                    equipments={equipments} 
+                    onRefresh={onRefresh} 
+                  />
+                </ScrollView>
+              )}
+              ListEmptyComponent={<Text style={localStyles.errorText}>{errorMessage}</Text>}
+              refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#dc3545']}/>
+              }
+            />
           )}
         </View>
 
@@ -183,7 +207,7 @@ const localStyles = StyleSheet.create({
   button: {
     borderRadius: 10,
     paddingVertical: 8,
-    backgroundColor: '#dc3545' // Cor vermelha para exclusão
+    backgroundColor: '#dc3545',
   },
   buttonLabel: {
     fontSize: 17,
@@ -200,7 +224,6 @@ const localStyles = StyleSheet.create({
   },
   resultsContainer: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   errorText: {
     textAlign: 'center',
