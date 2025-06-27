@@ -1,101 +1,133 @@
-# 🛠️ Gestão de Ferramentas - Pão com Ovo
+
+# 🛠️ Gestão de Ferramentas - *Cantier*
+
 ## 📖 Sobre o Projeto
-O projeto Gestão de Ferramentas é uma solução completa desenvolvida para facilitar e otimizar o controlo de equipamentos em ambientes de construção civil. O objetivo principal é oferecer uma plataforma centralizada para registar a entrada, saída e manutenção de ferramentas, aumentando a organização, a segurança e a eficiência das equipas no dia a dia da obra.
+
+**Gestão de Ferramentas** é uma solução completa desenvolvida para facilitar e otimizar o controle de equipamentos em ambientes de construção civil.
+Seu principal objetivo é oferecer uma plataforma centralizada para registrar entradas, saídas e manutenções de ferramentas, promovendo mais **organização, segurança e eficiência** no dia a dia das obras.
+
+---
 
 ## ✨ Funcionalidades Principais
-Autenticação de Utilizadores: Sistema de login seguro com encriptação de senhas (bcrypt) e recuperação de senha via token.
 
-Gestão de Equipamentos (CRUD): Cadastro, consulta, alteração e exclusão de equipamentos.
+* **Autenticação de Utilizadores**
+  Sistema de login seguro com encriptação de senhas (bcrypt) e recuperação via token.
 
-Leitura de QR Code: Leitor de QR Code integrado para identificar e buscar equipamentos rapidamente.
+* **Gestão de Equipamentos (CRUD)**
+  Cadastro, consulta, atualização e exclusão de equipamentos.
 
-Registo de Uso: Fluxo completo para registar a saída e a entrada (devolução) de equipamentos, associado a um utilizador e a uma atividade.
+* **Leitura de QR Code**
+  Leitor integrado para rápida identificação e busca de ferramentas.
 
-Registo de Manutenção: Sistema para registar serviços de manutenção realizados, incluindo descrição, custo e responsável.
+* **Registro de Uso**
+  Fluxo completo para registrar retirada e devolução de equipamentos, vinculados a um utilizador e a uma atividade.
 
-Relatórios e Históricos: Consulta detalhada do histórico de uso e de manutenção para cada equipamento.
+* **Registro de Manutenção**
+  Lançamento de serviços de manutenção, com descrição, custo e responsável.
+
+* **Relatórios e Históricos**
+  Consulta detalhada do histórico de uso e manutenções por equipamento.
+
+---
 
 ## 🚀 Tecnologias Utilizadas
-Este projeto é um monorepo que contém duas partes principais: o frontend (aplicativo móvel) e o backend (API).
 
-Frontend (Aplicação Móvel)
-React Native com Expo: Para o desenvolvimento multiplataforma (iOS e Android).
+Este projeto segue a arquitetura **monorepo**, contendo:
 
-TypeScript: Para um código mais seguro e robusto.
+### 🔹 Frontend (Aplicativo Móvel)
 
-Expo Router: Para a gestão de rotas e navegação entre ecrãs.
+* **React Native com Expo** – Desenvolvimento para iOS e Android.
+* **TypeScript** – Tipagem estática para maior robustez.
+* **Expo Router** – Navegação entre telas.
+* **React Native Paper** – Componentes de UI modernos.
+* **Axios** – Comunicação com o backend.
+* **React Native Gesture Handler** – Melhor experiência com gestos e navegação.
 
-React Native Paper: Para componentes de UI estilizados e consistentes.
+### 🔸 Backend (API)
 
-Axios: Para fazer as requisições HTTP para o backend.
+* **Node.js** – Ambiente de execução.
+* **Express.js** – Framework para API RESTful.
+* **MongoDB com Atlas** – Banco de dados NoSQL na nuvem.
+* **TypeScript** – Tipagem forte.
+* **bcrypt** – Encriptação de senhas.
+* **cors** – Comunicação segura entre frontend e backend.
+* **express-validator** – Validação de dados nas rotas.
 
-React Native Gesture Handler: Para uma melhor gestão de gestos e navegação.
-
-Backend (API)
-Node.js: Ambiente de execução do servidor.
-
-Express.js: Framework para a construção da API RESTful.
-
-MongoDB com Atlas: Banco de dados NoSQL na nuvem para armazenar todos os dados.
-
-TypeScript: Para tipagem forte no backend.
-
-bcrypt: Para a encriptação segura de senhas.
-
-cors: Para permitir a comunicação segura entre o frontend e o backend.
-
-express-validator: Para a validação dos dados que chegam nas rotas.
+---
 
 ## ⚙️ Configuração e Instalação
-Siga os passos abaixo para configurar e executar o projeto localmente.
 
-Pré-requisitos
-Node.js (versão 18 ou superior)
+### ✅ Pré-requisitos
 
-Yarn (pode ser instalado com npm install -g yarn)
+* Node.js (versão 18 ou superior)
+* Yarn (`npm install -g yarn`)
+* Conta no [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+* Aplicativo **Expo Go** no celular (iOS ou Android)
 
-Uma conta no MongoDB Atlas e uma string de conexão.
+---
 
-O aplicativo Expo Go instalado no seu telemóvel (iOS ou Android).
+### 🔧 1. Backend
 
-1. Backend
-Primeiro, configure e inicie o servidor da API.
+1. Navegue até a pasta do backend:
 
-### 1. Navegue para a pasta do backend
-cd caminho/para/seu/backend
+   ```bash
+   cd caminho/para/seu/backend
+   ```
 
-### 2. Crie um ficheiro .env na raiz da pasta do backend e adicione as suas variáveis:
-### (use o modelo abaixo)
+2. Crie um arquivo `.env` na raiz com as variáveis:
 
-### 3. Instale as dependências
-npm install
+   ```
+   MONGODB_URI=...
+   PORT=...
+   ```
 
-### 4. Inicie o servidor
-npm start
+3. Instale as dependências:
 
-Modelo para o ficheiro .env:
+   ```bash
+   npm install
+   ```
 
-MONGODB_URI="sua_string_de_conexao_do_mongodb_atlas"
-PORT=3000
+4. Inicie o servidor:
 
-2. Frontend
-Com o backend a rodar, configure e inicie o aplicativo móvel.
+   ```bash
+   npm start
+   ```
 
-### 1. Navegue para a pasta do frontend
-cd caminho/para/seu/frontend
+---
 
-### 2. Instale as dependências com Yarn (como mencionado na sua configuração)
-yarn install
+### 📱 2. Frontend
 
-### 3. Inicie o servidor de desenvolvimento do Expo
-yarn run start
+1. Navegue até a pasta do frontend:
 
-Após executar yarn run start, um QR Code será exibido no seu terminal. Digitalize-o com a câmara do seu telemóvel (iOS) ou com o aplicativo Expo Go (Android) para abrir o aplicativo no seu dispositivo.
+   ```bash
+   cd caminho/para/seu/frontend
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   yarn install
+   ```
+
+3. Inicie o servidor de desenvolvimento:
+
+   ```bash
+   yarn run start
+   ```
+
+Após isso, um QR Code será exibido no terminal.
+Abra o app **Expo Go** no seu celular para escaneá-lo e iniciar o aplicativo.
+
+---
 
 ## 👨‍💻 Autores
-Michael Douglas
 
-Diego Cruz
+* **Michael Douglas**
+* **Diego Cruz**
+
+---
 
 ## 📄 Licença
-Este projeto está sob a licença MIT. Veja o ficheiro LICENSE para mais detalhes.
+
+Este projeto está licenciado sob a **MIT License**.
+Consulte o arquivo [LICENSE](./LICENSE) para mais informações.
