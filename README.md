@@ -1,8 +1,8 @@
-🛠️ Gestão de Ferramentas - Pão com Ovo
-📖 Sobre o Projeto
+# 🛠️ Gestão de Ferramentas - Pão com Ovo
+## 📖 Sobre o Projeto
 O projeto Gestão de Ferramentas é uma solução completa desenvolvida para facilitar e otimizar o controlo de equipamentos em ambientes de construção civil. O objetivo principal é oferecer uma plataforma centralizada para registar a entrada, saída e manutenção de ferramentas, aumentando a organização, a segurança e a eficiência das equipas no dia a dia da obra.
 
-✨ Funcionalidades Principais
+## ✨ Funcionalidades Principais
 Autenticação de Utilizadores: Sistema de login seguro com encriptação de senhas (bcrypt) e recuperação de senha via token.
 
 Gestão de Equipamentos (CRUD): Cadastro, consulta, alteração e exclusão de equipamentos.
@@ -15,7 +15,7 @@ Registo de Manutenção: Sistema para registar serviços de manutenção realiza
 
 Relatórios e Históricos: Consulta detalhada do histórico de uso e de manutenção para cada equipamento.
 
-🚀 Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 Este projeto é um monorepo que contém duas partes principais: o frontend (aplicativo móvel) e o backend (API).
 
 Frontend (Aplicação Móvel)
@@ -46,7 +46,7 @@ cors: Para permitir a comunicação segura entre o frontend e o backend.
 
 express-validator: Para a validação dos dados que chegam nas rotas.
 
-⚙️ Configuração e Instalação
+## ⚙️ Configuração e Instalação
 Siga os passos abaixo para configurar e executar o projeto localmente.
 
 Pré-requisitos
@@ -61,16 +61,16 @@ O aplicativo Expo Go instalado no seu telemóvel (iOS ou Android).
 1. Backend
 Primeiro, configure e inicie o servidor da API.
 
-# 1. Navegue para a pasta do backend
+### 1. Navegue para a pasta do backend
 cd caminho/para/seu/backend
 
-# 2. Crie um ficheiro .env na raiz da pasta do backend e adicione as suas variáveis:
-# (use o modelo abaixo)
+### 2. Crie um ficheiro .env na raiz da pasta do backend e adicione as suas variáveis:
+### (use o modelo abaixo)
 
-# 3. Instale as dependências
+### 3. Instale as dependências
 npm install
 
-# 4. Inicie o servidor
+### 4. Inicie o servidor
 npm start
 
 Modelo para o ficheiro .env:
@@ -81,21 +81,21 @@ PORT=3000
 2. Frontend
 Com o backend a rodar, configure e inicie o aplicativo móvel.
 
-# 1. Navegue para a pasta do frontend
+### 1. Navegue para a pasta do frontend
 cd caminho/para/seu/frontend
 
-# 2. Instale as dependências com Yarn (como mencionado na sua configuração)
+### 2. Instale as dependências com Yarn (como mencionado na sua configuração)
 yarn install
 
-# 3. Inicie o servidor de desenvolvimento do Expo
+### 3. Inicie o servidor de desenvolvimento do Expo
 yarn run start
 
 Após executar yarn run start, um QR Code será exibido no seu terminal. Digitalize-o com a câmara do seu telemóvel (iOS) ou com o aplicativo Expo Go (Android) para abrir o aplicativo no seu dispositivo.
 
-👨‍💻 Autores
+## 👨‍💻 Autores
 Michael Douglas
 
 Diego Cruz
 
-📄 Licença
+## 📄 Licença
 Este projeto está sob a licença MIT. Veja o ficheiro LICENSE para mais detalhes.
